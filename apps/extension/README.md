@@ -1,30 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BookmarkPro Browser Extension
 
-## Getting Started
+Vite + React 기반의 브라우저 확장프로그램입니다.
 
-First, run the development server:
+## 개발
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+# 의존성 설치
+pnpm install
+
+# 개발 서버 실행 (popup 개발용)
 pnpm dev
-# or
-bun dev
+
+# 확장프로그램 빌드
+pnpm build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 확장프로그램 설치
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. `pnpm build` 실행
+2. Chrome 브라우저에서 `chrome://extensions/` 이동
+3. "개발자 모드" 활성화
+4. "압축해제된 확장 프로그램을 로드합니다" 클릭
+5. `dist` 폴더 선택
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 기능
 
-## Learn More
+- 현재 페이지를 북마크로 저장
+- 태그 및 메모 추가
+- BookmarkPro 웹 앱과 연동 (예정)
 
-To learn more about Next.js, take a look at the following resources:
+## 구조
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/popup.tsx` - 팝업 UI 진입점
+- `src/App.tsx` - 메인 앱 컴포넌트
+- `src/components/` - React 컴포넌트들
+- `src/background.ts` - 백그라운드 스크립트
+- `src/content.ts` - 콘텐츠 스크립트
+- `manifest.json` - 확장프로그램 설정

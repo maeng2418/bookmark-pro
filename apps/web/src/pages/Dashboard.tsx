@@ -1,8 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/hooks/use-toast";
+import { Button, Card, CardContent, useToast } from "@repo/ui";
 import { Header } from "@/components/Header";
 import { BookmarkCard } from "@/components/BookmarkCard";
 import { AddBookmarkDialog } from "@/components/AddBookmarkDialog";
@@ -15,11 +13,7 @@ import {
   User as UserIcon, 
   BookmarkPlus
 } from "lucide-react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@repo/ui";
 
 interface Bookmark {
   id: string;

@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
+import { Button, Input } from "@repo/ui";
 import { Bookmark, Plus, Search, User } from "lucide-react";
-import { Input } from "@/components/ui/input";
 
 interface HeaderProps {
   onAddBookmark: () => void;

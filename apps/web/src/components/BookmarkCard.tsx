@@ -1,6 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Button, Badge, Card, CardContent, CardFooter, CardHeader } from "@repo/ui";
 import { ExternalLink, Trash2, Edit3, Globe } from "lucide-react";
 
 export interface Bookmark {

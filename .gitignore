@@ -29,6 +29,7 @@ dist-ssr
 # Build outputs
 dist
 build
+.next
 
 # Environment variables
 .env

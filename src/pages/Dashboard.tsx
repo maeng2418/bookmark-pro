@@ -1,108 +1,200 @@
-import { useState, useMemo } from "react";
-import { Header } from "@/components/Header";
-import { BookmarkCard, type Bookmark } from "@/components/BookmarkCard";
-import { AddBookmarkDialog } from "@/components/AddBookmarkDialog";
-import { CategoryFilter } from "@/components/CategoryFilter";
+import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import { BookmarkPlus, Grid3X3, List, SortAsc } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { Header } from "@/components/Header";
+import { BookmarkCard } from "@/components/BookmarkCard";
+import { AddBookmarkDialog } from "@/components/AddBookmarkDialog";
+import { CategoryFilter } from "@/components/CategoryFilter";
+import { supabase } from "@/integrations/supabase/client";
+import type { User, Session } from "@supabase/supabase-js";
+import { 
+  Grid3X3, 
+  List, 
+  User as UserIcon, 
+  BookmarkPlus
+} from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
-// Mock data for initial bookmarks
-const initialBookmarks: Bookmark[] = [
-  {
-    id: "1",
-    title: "React 공식 문서",
-    url: "https://react.dev",
-    category: "개발",
-    tags: ["react", "javascript", "frontend"],
-    createdAt: new Date("2024-01-15"),
-    favicon: "https://react.dev/favicon.ico"
-  },
-  {
-    id: "2", 
-    title: "Tailwind CSS",
-    url: "https://tailwindcss.com",
-    category: "개발",
-    tags: ["css", "design", "frontend"],
-    createdAt: new Date("2024-01-16"),
-    favicon: "https://tailwindcss.com/favicon.ico"
-  },
-  {
-    id: "3",
-    title: "YouTube",
-    url: "https://youtube.com",
-    category: "엔터테인먼트",
-    tags: ["video", "entertainment"],
-    createdAt: new Date("2024-01-17"),
-    favicon: "https://youtube.com/favicon.ico"
-  }
-];
+interface Bookmark {
+  id: string;
+  title: string;
+  url: string;
+  description?: string;
+  category: string;
+  tags: string[];
+  created_at: string;
+  favicon?: string;
+  user_id: string;
+}
 
-export const Dashboard = () => {
-  const [bookmarks, setBookmarks] = useState<Bookmark[]>(initialBookmarks);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+const Dashboard = () => {
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>("전체");
   const [searchQuery, setSearchQuery] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [editingBookmark, setEditingBookmark] = useState<Bookmark | undefined>();
+  const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
-  const [isLoggedIn, setIsLoggedIn] = useState(true); // Mock logged in state
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
-  // Filter bookmarks based on category and search
+  // Auth effect
+  useEffect(() => {
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (!session) {
+          navigate('/auth');
+        } else {
+          // Fetch bookmarks when user logs in
+          setTimeout(() => {
+            fetchBookmarks();
+          }, 0);
+        }
+      }
+    );
+
+    // Check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setLoading(false);
+      
+      if (!session) {
+        navigate('/auth');
+      } else {
+        fetchBookmarks();
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  // Fetch bookmarks from Supabase
+  const fetchBookmarks = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('bookmarks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setBookmarks(data || []);
+    } catch (error) {
+      console.error('Error fetching bookmarks:', error);
+      toast({
+        title: "오류",
+        description: "북마크를 불러오는데 실패했습니다.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Memoized filtered bookmarks
   const filteredBookmarks = useMemo(() => {
     return bookmarks.filter(bookmark => {
-      const matchesCategory = !selectedCategory || bookmark.category === selectedCategory;
-      const matchesSearch = !searchQuery || 
-        bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        bookmark.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        bookmark.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      
+      const matchesCategory = selectedCategory === "전체" || bookmark.category === selectedCategory;
+      const matchesSearch = bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          bookmark.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          bookmark.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
       return matchesCategory && matchesSearch;
     });
   }, [bookmarks, selectedCategory, searchQuery]);
 
-  // Get unique categories
+  // Memoized categories
   const categories = useMemo(() => {
-    return Array.from(new Set(bookmarks.map(b => b.category))).sort();
+    const uniqueCategories = Array.from(new Set(bookmarks.map(b => b.category)));
+    return ["전체", ...uniqueCategories];
   }, [bookmarks]);
 
-  // Get bookmark counts by category
+  // Memoized bookmark counts
   const bookmarkCounts = useMemo(() => {
-    return bookmarks.reduce((counts, bookmark) => {
+    const counts: Record<string, number> = { "전체": bookmarks.length };
+    bookmarks.forEach(bookmark => {
       counts[bookmark.category] = (counts[bookmark.category] || 0) + 1;
-      return counts;
-    }, {} as Record<string, number>);
+    });
+    return counts;
   }, [bookmarks]);
 
-  const handleSaveBookmark = (bookmarkData: Omit<Bookmark, 'id' | 'createdAt'>) => {
-    if (editingBookmark) {
-      // Update existing bookmark
-      setBookmarks(prev => prev.map(b => 
-        b.id === editingBookmark.id 
-          ? { ...bookmarkData, id: editingBookmark.id, createdAt: editingBookmark.createdAt }
-          : b
-      ));
-      setEditingBookmark(undefined);
-    } else {
-      // Check for duplicate URL
-      const isDuplicate = bookmarks.some(b => b.url === bookmarkData.url);
-      if (isDuplicate) {
+  const handleSaveBookmark = async (bookmarkData: Omit<Bookmark, "id" | "created_at" | "user_id">) => {
+    if (!user) return;
+
+    try {
+      if (editingBookmark) {
+        // Update existing bookmark
+        const { error } = await supabase
+          .from('bookmarks')
+          .update({
+            title: bookmarkData.title,
+            url: bookmarkData.url,
+            description: bookmarkData.description,
+            category: bookmarkData.category,
+            tags: bookmarkData.tags,
+            favicon: bookmarkData.favicon,
+          })
+          .eq('id', editingBookmark.id);
+
+        if (error) throw error;
+
         toast({
-          title: "중복된 URL",
-          description: "이미 저장된 URL입니다.",
-          variant: "destructive"
+          title: "북마크 수정됨",
+          description: "북마크가 성공적으로 수정되었습니다.",
         });
-        return;
+      } else {
+        // Check for duplicate URL
+        const { data: existingBookmarks } = await supabase
+          .from('bookmarks')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('url', bookmarkData.url);
+
+        if (existingBookmarks && existingBookmarks.length > 0) {
+          toast({
+            title: "중복된 URL",
+            description: "이미 저장된 URL입니다.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        // Add new bookmark
+        const { error } = await supabase
+          .from('bookmarks')
+          .insert({
+            ...bookmarkData,
+            user_id: user.id,
+          });
+
+        if (error) throw error;
+
+        toast({
+          title: "북마크 추가됨",
+          description: "새 북마크가 성공적으로 추가되었습니다.",
+        });
       }
 
-      // Add new bookmark
-      const newBookmark: Bookmark = {
-        ...bookmarkData,
-        id: Date.now().toString(),
-        createdAt: new Date()
-      };
-      setBookmarks(prev => [newBookmark, ...prev]);
+      // Refresh bookmarks
+      fetchBookmarks();
+      setIsAddDialogOpen(false);
+      setEditingBookmark(null);
+    } catch (error) {
+      console.error('Error saving bookmark:', error);
+      toast({
+        title: "오류",
+        description: "북마크 저장에 실패했습니다.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -111,80 +203,79 @@ export const Dashboard = () => {
     setIsAddDialogOpen(true);
   };
 
-  const handleDeleteBookmark = (id: string) => {
-    setBookmarks(prev => prev.filter(b => b.id !== id));
-    toast({
-      title: "삭제 완료",
-      description: "북마크가 삭제되었습니다."
-    });
+  const handleDeleteBookmark = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookmarks')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "북마크 삭제됨",
+        description: "북마크가 성공적으로 삭제되었습니다.",
+      });
+
+      // Refresh bookmarks
+      fetchBookmarks();
+    } catch (error) {
+      console.error('Error deleting bookmark:', error);
+      toast({
+        title: "오류",
+        description: "북마크 삭제에 실패했습니다.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleLogin = () => {
-    // Mock login - in real app, integrate with Google OAuth
-    setIsLoggedIn(true);
-    toast({
-      title: "로그인 성공",
-      description: "구글 계정으로 로그인되었습니다."
-    });
+  const handleLogout = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      
+      navigate('/auth');
+    } catch (error) {
+      console.error('Error signing out:', error);
+      toast({
+        title: "오류",
+        description: "로그아웃에 실패했습니다.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false);
-    toast({
-      title: "로그아웃",
-      description: "성공적으로 로그아웃되었습니다."
-    });
-  };
-
-  if (!isLoggedIn) {
+  // Loading state
+  if (loading) {
     return (
-      <div className="min-h-screen bg-background">
-        <Header
-          onAddBookmark={() => {}}
-          searchQuery=""
-          onSearchChange={() => {}}
-          isLoggedIn={false}
-          onLogin={handleLogin}
-          onLogout={handleLogout}
-        />
-        
-        <div className="container mx-auto px-4 py-16">
-          <div className="max-w-md mx-auto text-center space-y-6">
-            <div className="p-4 rounded-2xl bg-bookmark-gradient w-fit mx-auto">
-              <BookmarkPlus className="h-12 w-12 text-white" />
-            </div>
-            <div className="space-y-2">
-              <h2 className="text-2xl font-bold">북마크를 스마트하게 관리하세요</h2>
-              <p className="text-muted-foreground">
-                URL을 카테고리별로 정리하고, 태그로 분류하여 쉽게 찾아보세요.
-              </p>
-            </div>
-            <Button onClick={handleLogin} className="bg-bookmark-gradient hover:opacity-90">
-              구글로 시작하기
-            </Button>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-4 animate-pulse">
+            <UserIcon className="w-8 h-8 text-white" />
           </div>
+          <p className="text-muted-foreground">로딩 중...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <Header
         onAddBookmark={() => setIsAddDialogOpen(true)}
+        onSearch={setSearchQuery}
         searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        isLoggedIn={isLoggedIn}
-        onLogin={handleLogin}
+        isLoggedIn={!!user}
+        onLogin={() => navigate('/auth')}
         onLogout={handleLogout}
-        userEmail="user@example.com"
+        user={user}
       />
 
       <div className="container mx-auto px-4 py-6">
         <div className="flex gap-6">
-          {/* Sidebar */}
-          <div className="w-64 space-y-4 hidden lg:block">
-            <Card>
+          {/* Desktop Sidebar */}
+          <div className="hidden lg:block w-64 space-y-4">
+            <Card className="backdrop-blur-sm bg-card/50 border-border/50">
               <CardContent className="p-4">
                 <CategoryFilter
                   categories={categories}
@@ -198,11 +289,50 @@ export const Dashboard = () => {
 
           {/* Main Content */}
           <div className="flex-1 space-y-4">
+            {/* Mobile Category Filter */}
+            <div className="lg:hidden">
+              <Collapsible>
+                <CollapsibleTrigger asChild>
+                  <Button variant="outline" className="w-full justify-between">
+                    카테고리 필터
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 15 15"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                    >
+                      <path
+                        d="m4.5 6 3 3 3-3"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </Button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-4">
+                  <Card className="backdrop-blur-sm bg-card/50 border-border/50">
+                    <CardContent className="p-4">
+                      <CategoryFilter
+                        categories={categories}
+                        selectedCategory={selectedCategory}
+                        onCategorySelect={setSelectedCategory}
+                        bookmarkCounts={bookmarkCounts}
+                      />
+                    </CardContent>
+                  </Card>
+                </CollapsibleContent>
+              </Collapsible>
+            </div>
+
             {/* Controls */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h2 className="text-lg font-semibold">
-                  {selectedCategory ? `${selectedCategory} 카테고리` : "전체 북마크"}
+                <h2 className="text-lg font-semibold text-foreground">
+                  {selectedCategory === "전체" ? "전체 북마크" : `${selectedCategory} 카테고리`}
                 </h2>
                 <span className="text-sm text-muted-foreground">
                   ({filteredBookmarks.length}개)
@@ -214,6 +344,7 @@ export const Dashboard = () => {
                   variant={viewMode === "grid" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
+                  className={viewMode === "grid" ? "bg-primary text-primary-foreground" : ""}
                 >
                   <Grid3X3 className="h-4 w-4" />
                 </Button>
@@ -221,42 +352,35 @@ export const Dashboard = () => {
                   variant={viewMode === "list" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setViewMode("list")}
+                  className={viewMode === "list" ? "bg-primary text-primary-foreground" : ""}
                 >
                   <List className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            <Separator />
-
-            {/* Mobile Category Filter */}
-            <div className="lg:hidden">
-              <Card>
-                <CardContent className="p-4">
-                  <CategoryFilter
-                    categories={categories}
-                    selectedCategory={selectedCategory}
-                    onCategorySelect={setSelectedCategory}
-                    bookmarkCounts={bookmarkCounts}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-
             {/* Bookmarks Grid/List */}
             {filteredBookmarks.length === 0 ? (
               <div className="text-center py-16 space-y-4">
-                <BookmarkPlus className="h-12 w-12 text-muted-foreground mx-auto" />
-                <div>
-                  <h3 className="text-lg font-medium">북마크가 없습니다</h3>
-                  <p className="text-muted-foreground">첫 번째 북마크를 추가해보세요!</p>
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-4">
+                  <BookmarkPlus className="w-8 h-8 text-white" />
                 </div>
-                <Button 
-                  onClick={() => setIsAddDialogOpen(true)}
-                  className="bg-bookmark-gradient hover:opacity-90"
-                >
-                  북마크 추가하기
-                </Button>
+                <div>
+                  <h3 className="text-lg font-medium text-foreground">
+                    {searchQuery ? "검색 결과가 없습니다" : "북마크가 없습니다"}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {searchQuery ? "다른 키워드로 검색해보세요" : "첫 번째 북마크를 추가해보세요!"}
+                  </p>
+                </div>
+                {!searchQuery && (
+                  <Button 
+                    onClick={() => setIsAddDialogOpen(true)}
+                    className="bg-gradient-primary hover:opacity-90 text-white"
+                  >
+                    북마크 추가하기
+                  </Button>
+                )}
               </div>
             ) : (
               <div className={
@@ -267,9 +391,15 @@ export const Dashboard = () => {
                 {filteredBookmarks.map(bookmark => (
                   <BookmarkCard
                     key={bookmark.id}
-                    bookmark={bookmark}
-                    onEdit={handleEditBookmark}
-                    onDelete={handleDeleteBookmark}
+                    id={bookmark.id}
+                    title={bookmark.title}
+                    url={bookmark.url}
+                    category={bookmark.category}
+                    tags={bookmark.tags}
+                    createdAt={bookmark.created_at}
+                    favicon={bookmark.favicon}
+                    onEdit={() => handleEditBookmark(bookmark)}
+                    onDelete={() => handleDeleteBookmark(bookmark.id)}
                   />
                 ))}
               </div>
@@ -282,12 +412,17 @@ export const Dashboard = () => {
         open={isAddDialogOpen}
         onOpenChange={(open) => {
           setIsAddDialogOpen(open);
-          if (!open) setEditingBookmark(undefined);
+          if (!open) setEditingBookmark(null);
         }}
         onSave={handleSaveBookmark}
-        categories={categories}
-        editingBookmark={editingBookmark}
+        categories={categories.filter(c => c !== "전체")}
+        editingBookmark={editingBookmark ? {
+          ...editingBookmark,
+          createdAt: new Date(editingBookmark.created_at)
+        } : null}
       />
     </div>
   );
 };
+
+export default Dashboard;

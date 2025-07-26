@@ -5,22 +5,27 @@ import { Input } from "@/components/ui/input";
 interface HeaderProps {
   onAddBookmark: () => void;
   searchQuery: string;
-  onSearchChange: (query: string) => void;
+  onSearch: (query: string) => void;
+  onSearchChange?: (query: string) => void;
   isLoggedIn: boolean;
   onLogin: () => void;
   onLogout: () => void;
   userEmail?: string;
+  user?: any;
 }
 
 export const Header = ({
   onAddBookmark,
   searchQuery,
+  onSearch,
   onSearchChange,
   isLoggedIn,
   onLogin,
   onLogout,
-  userEmail
+  userEmail,
+  user
 }: HeaderProps) => {
+  const handleSearchChange = onSearch || onSearchChange || (() => {});
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
       <div className="container mx-auto px-4 py-4">
@@ -40,7 +45,7 @@ export const Header = ({
               <Input
                 placeholder="북마크 검색..."
                 value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
+                onChange={(e) => handleSearchChange(e.target.value)}
                 className="pl-10"
               />
             </div>
@@ -58,7 +63,7 @@ export const Header = ({
               <div className="flex items-center gap-2">
                 <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
                   <User className="h-4 w-4" />
-                  <span className="text-sm">{userEmail}</span>
+                  <span className="text-sm">{userEmail || user?.email || "사용자"}</span>
                 </div>
                 <Button variant="outline" onClick={onLogout}>
                   로그아웃

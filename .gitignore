@@ -26,6 +26,10 @@ dist-ssr
 # Turbo
 .turbo
 
+# Build outputs
+dist
+build
+
 # Environment variables
 .env
 .env.local

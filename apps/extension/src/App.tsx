@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@repo/ui'
-import { Bookmark, Plus, X } from 'lucide-react'
+import { Bookmark, Plus, LogOut } from 'lucide-react'
 import BookmarkForm from './components/BookmarkForm'
+import AuthScreen from './components/AuthScreen'
+import { useAuth } from './contexts/AuthContext'
 import { getCurrentTab, saveBookmark } from './lib/extension'
 
 export default function App() {
+  const { user, loading: authLoading, signOut } = useAuth()
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -31,7 +34,7 @@ export default function App() {
     memo?: string
   }) => {
     try {
-      await saveBookmark(bookmarkData)
+      await saveBookmark(bookmarkData, user?.id)
       setShowForm(false)
       // 성공 메시지 표시 또는 팝업 닫기
       window.close()
@@ -40,12 +43,22 @@ export default function App() {
     }
   }
 
-  if (loading) {
+  const handleSignOut = async () => {
+    await signOut()
+    setShowForm(false)
+  }
+
+  if (authLoading || loading) {
     return (
       <div className="w-80 h-60 flex items-center justify-center bg-white">
         <div className="text-gray-500">로딩중...</div>
       </div>
     )
+  }
+
+  // 로그인하지 않은 경우 인증 화면 표시
+  if (!user) {
+    return <AuthScreen />
   }
 
   if (showForm && currentTab) {
@@ -64,11 +77,25 @@ export default function App() {
   return (
     <div className="w-80 bg-white">
       <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
-            <Bookmark className="w-4 h-4 text-white" />
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+              <Bookmark className="w-4 h-4 text-white" />
+            </div>
+            <h1 className="text-lg font-semibold text-gray-900">BookmarkPro</h1>
           </div>
-          <h1 className="text-lg font-semibold text-gray-900">BookmarkPro</h1>
+          <button
+            onClick={handleSignOut}
+            className="p-1 text-gray-500 hover:text-gray-700 rounded"
+            title="로그아웃"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="mt-2">
+          <p className="text-xs text-gray-600">
+            {user.email}
+          </p>
         </div>
       </div>
 

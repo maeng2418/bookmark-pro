@@ -13,19 +13,20 @@ export async function saveBookmark(bookmarkData: {
   title: string
   tags: string[]
   memo?: string
-}) {
-  // 로컬 스토리지에 임시 저장 (나중에 웹 앱과 연동)
+}, userId?: string) {
+  // 로컬 스토리지에 임시 저장
   const bookmarks = await getStoredBookmarks()
   const newBookmark = {
     id: Date.now().toString(),
     ...bookmarkData,
+    userId,
     createdAt: new Date().toISOString(),
   }
   
   bookmarks.push(newBookmark)
   await chrome.storage.local.set({ bookmarks })
   
-  // TODO: 웹 앱의 Supabase와 동기화
+  // TODO: Supabase에 저장하는 로직 추가 예정
   console.log('Bookmark saved:', newBookmark)
 }
 

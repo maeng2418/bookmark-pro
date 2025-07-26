@@ -23,6 +23,9 @@ importers:
       '@repo/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@supabase/supabase-js':
+        specifier: ^2.52.1
+        version: 2.52.1
       lucide-react:
         specifier: ^0.462.0
         version: 0.462.0(react@18.3.1)

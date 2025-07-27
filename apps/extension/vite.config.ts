@@ -1,12 +1,13 @@
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { resolve } from 'path'
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
-    plugins: [react()],
+    plugins: [react(), tsconfigPaths()],
     server: {
       fs: {
         allow: [".."],
@@ -15,7 +16,9 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src'),
-        "@bookmark-pro/ui": resolve(__dirname, "../../packages/ui/src"),
+        "@bookmark-pro/ui": mode === "development" 
+          ? resolve(__dirname, "../../packages/ui/src") 
+          : resolve(__dirname, "../../packages/ui/dist"),
       },
     },
     optimizeDeps: {

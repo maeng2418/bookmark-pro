@@ -15,19 +15,22 @@ BookmarkPro는 웹과 브라우저 확장프로그램에서 북마크를 효율�
 ```
 bookmark-pro/
 ├── apps/
-│   ├── web/          # 웹 애플리케이션 (Vite + React)
+│   ├── web/          # 웹 애플리케이션 (Next.js 15 App Router)
 │   └── extension/   # 브라우저 확장프로그램 (Chrome Extension)
 ├── packages/
-│   └── ui/                       # 공유 UI 컴포넌트 라이브러리
-├── supabase/                     # 데이터베이스 마이그레이션 및 설정
+│   ├── ui/          # 공유 UI 컴포넌트 라이브러리
+│   └── tsconfig/    # 공유 TypeScript 설정
+├── integrations/    # 외부 서비스 통합
+│   └── supabase/   # Supabase 클라이언트 및 타입
 └── 설정 파일들...
 ```
 
 ### 패키지 구성
 
-- **`@bookmark-pro/web`**: React 기반 웹 애플리케이션
+- **`@bookmark-pro/web`**: Next.js 15 기반 웹 애플리케이션 (App Router)
 - **`@bookmark-pro/extension`**: Manifest V3 Chrome 확장프로그램
-- **`@bookmark-pro/ui`**: 공유 UI 컴포넌트 (shadcn/ui 기반)
+- **`@bookmark-pro/ui`**: 공유 UI 컴포넌트 (shadcn/ui + Radix UI 기반)
+- **`@bookmark-pro/tsconfig`**: 공유 TypeScript 설정
 
 ## 🛠️ 기술 스택
 
@@ -39,11 +42,12 @@ bookmark-pro/
 
 ### 프론트엔드
 
+- **Next.js 15**: React 기반 풀스택 프레임워크 (App Router)
 - **React 18**: 컴포넌트 기반 UI 라이브러리
 - **TypeScript**: 타입 안전성을 위한 정적 타입 검사
-- **Vite**: 빠른 개발 서버 및 번들러
+- **Vite**: UI 패키지 빌드 및 HMR 지원
 - **Tailwind CSS**: 유틸리티 퍼스트 CSS 프레임워크
-- **shadcn/ui**: 재사용 가능한 UI 컴포넌트
+- **shadcn/ui + Radix UI**: 접근성 있는 재사용 가능한 UI 컴포넌트
 
 ### 백엔드 및 데이터베이스
 
@@ -103,11 +107,17 @@ bookmark-pro/
 5. **개발 서버 실행**
 
    ```bash
-   # 모든 앱 동시 실행
+   # 모든 앱 동시 실행 (권장)
    pnpm dev
 
+   # 웹 앱 + UI 패키지 HMR
+   pnpm run web:dev
+
+   # 확장프로그램 + UI 패키지 HMR  
+   pnpm run extension:dev
+
    # 개별 앱 실행
-   pnpm --filter @bookmark-pro/web dev
+   pnpm --filter @bookmark-pro/web dev     # Next.js (포트 8080)
    pnpm --filter @bookmark-pro/extension dev
    ```
 
@@ -139,7 +149,7 @@ pnpm --filter @bookmark-pro/extension build
 
 2. Chrome 확장프로그램 관리 페이지에서 개발자 모드 활성화
 
-3. `apps/bookmark-pro-extension/dist` 폴더를 "압축해제된 확장 프로그램 로드"로 추가
+3. `apps/extension/dist` 폴더를 "압축해제된 확장 프로그램 로드"로 추가
 
 ## 📚 사용법
 

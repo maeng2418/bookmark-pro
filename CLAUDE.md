@@ -162,6 +162,12 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 - Parallel builds with proper dependency ordering
 - Extension builds include manifest copying to dist
 
+### UI Package Import Strategy
+- **Development Mode**: Next.js uses webpack alias to point `@bookmark-pro/ui` to source files (`src/`)
+- **Production Mode**: Uses built dist files with manual type definitions
+- **Dynamic Imports**: All UI components in providers.tsx use dynamic imports with `ssr: false` to prevent SSR conflicts
+- **SSR Compatibility**: Components work with both server and client rendering when properly configured
+
 ## Common Gotchas
 
 1. **UI Package Types**: Must manually update `packages/ui/dist/index.d.ts` when adding new exports
@@ -169,3 +175,19 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 3. **Supabase RLS**: Row Level Security policies must be configured for new tables
 4. **Chrome Extension**: Must rebuild and reload extension after changes to see updates
 5. **Workspace Dependencies**: Use `workspace:*` for internal package dependencies
+6. **UI Component SSR**: Use dynamic imports with `ssr: false` for components that cause hydration issues
+7. **Development Path Mismatch**: Ensure tsconfig.json paths match webpack alias configuration for consistent module resolution
+
+## Troubleshooting Development Issues
+
+### UI Package Import Errors
+If you encounter `Cannot read properties of undefined` errors from UI package:
+1. Check if UI components are properly imported as dynamic imports in providers.tsx
+2. Verify tsconfig.json paths match the webpack alias configuration
+3. Ensure UI package is built: `pnpm --filter @bookmark-pro/ui build`
+4. For development, tsconfig should point to `src/` not `dist/`
+
+### Next.js Development Server Issues
+- Use port 8080 for web app: `pnpm --filter @bookmark-pro/web dev`
+- HMR works with UI package source files in development mode
+- If compilation fails, rebuild UI package and restart Next.js server

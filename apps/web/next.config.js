@@ -1,4 +1,11 @@
-const path = require('path');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const require = createRequire(import.meta.url);
+
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env.local') });
 
 /** @type {import('next').NextConfig} */
@@ -19,10 +26,10 @@ const nextConfig = {
   },
   webpack: (config, { isServer, dev }) => {
     if (dev) {
-      config.resolve.alias['@bookmark-pro/ui'] = require('path').resolve(__dirname, '../../packages/ui/src');
+      config.resolve.alias['@bookmark-pro/ui'] = path.resolve(__dirname, '../../packages/ui/src');
     }
     return config;
   },
 }
 
-module.exports = nextConfig
+export default nextConfig;

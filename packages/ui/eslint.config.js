@@ -1,22 +1,8 @@
-import eslint from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import react from 'eslint-plugin-react';
+import sharedConfig from '@bookmark-pro/eslint-config';
 
-export default tseslint.config(
+export default [
+  ...sharedConfig,
   {
-    ignores: ["dist/**", "node_modules/**", "**/*.config.js"],
+    // UI specific rules or overrides
   },
-  eslint.configs.recommended,
-  ...tseslint.configs.recommended,
-  {
-    plugins: {
-      react,
-    },
-    rules: {
-      '@typescript-eslint/no-unused-vars': ['warn', {
-        argsIgnorePattern: '^'
-      }],
-      '@typescript-eslint/no-explicit-any': 'warn',
-    },
-  },
-);
+];

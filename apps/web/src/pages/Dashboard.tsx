@@ -49,11 +49,10 @@ const Dashboard = () => {
     // Set up auth state listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    } = supabase.auth.onAuthStateChange((event, _session) => {
+      setUser(_session?.user ?? null);
 
-      if (!session) {
+      if (!_session) {
         router.push("/auth");
       } else {
         // Fetch bookmarks when user logs in
@@ -64,12 +63,11 @@ const Dashboard = () => {
     });
 
     // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    supabase.auth.getSession().then(({ data: { session: _session } }) => {
+      setUser(_session?.user ?? null);
       setLoading(false);
 
-      if (!session) {
+      if (!_session) {
         router.push("/auth");
       } else {
         fetchBookmarks();
@@ -77,10 +75,10 @@ const Dashboard = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, [router]);
+  }, [router, fetchBookmarks]);
 
   // Fetch bookmarks from Supabase
-  const fetchBookmarks = async () => {
+  const fetchBookmarks = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from("bookmarks")
@@ -97,7 +95,7 @@ const Dashboard = () => {
         variant: "destructive",
       });
     }
-  };
+  }, [toast]);
 
   // Memoized filtered bookmarks
   const filteredBookmarks = useMemo(() => {

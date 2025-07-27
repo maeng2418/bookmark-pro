@@ -1,5 +1,6 @@
 import { Button, Input } from "@bookmark-pro/ui";
 import { Bookmark, Plus, Search, User } from "lucide-react";
+import { User as SupabaseUser } from "@supabase/supabase-js";
 
 interface HeaderProps {
   onAddBookmark: () => void;
@@ -10,7 +11,7 @@ interface HeaderProps {
   onLogin: () => void;
   onLogout: () => void;
   userEmail?: string;
-  user?: any;
+  user?: SupabaseUser;
 }
 
 export const Header = ({

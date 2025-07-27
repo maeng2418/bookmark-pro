@@ -1,0 +1,15 @@
+{
+  "name": "@bookmark-pro/eslint-config",
+  "version": "0.0.0",
+  "private": true,
+  "main": "index.js",
+  "type": "module",
+  "devDependencies": {
+    "@eslint/js": "^9.32.0",
+    "eslint-config-next": "^15.1.4",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "typescript-eslint": "^8.38.0"
+  }
+}

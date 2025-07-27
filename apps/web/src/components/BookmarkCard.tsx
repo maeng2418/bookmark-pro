@@ -1,3 +1,4 @@
+import Image from "next/image";
 import {
   Badge,
   Button,
@@ -16,18 +17,6 @@ export interface Bookmark {
   tags: string[];
   createdAt: Date | string;
   favicon?: string;
-}
-
-interface BookmarkCardProps2 {
-  id: string;
-  title: string;
-  url: string;
-  category: string;
-  tags: string[];
-  createdAt: string;
-  favicon?: string;
-  onEdit: () => void;
-  onDelete: () => void;
 }
 
 interface BookmarkCardProps {
@@ -84,7 +73,13 @@ export const BookmarkCard = ({
           <div className="flex items-center gap-2 min-w-0 flex-1">
             <div className="p-2 rounded-lg bg-muted flex-shrink-0">
               {bookmarkData.favicon ? (
-                <img src={bookmarkData.favicon} alt="" className="h-4 w-4" />
+                <Image
+                  src={bookmarkData.favicon}
+                  alt="Favicon"
+                  width={16}
+                  height={16}
+                  className="h-4 w-4"
+                />
               ) : (
                 <Globe className="h-4 w-4 text-muted-foreground" />
               )}

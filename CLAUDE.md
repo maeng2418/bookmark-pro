@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 pnpm dev
 
 # Start individual services (includes UI package for HMR)
-pnpm run web:dev        # Web app + UI package
+pnpm run web:dev        # Next.js web app + UI package
 pnpm run extension:dev  # Extension + UI package
 
 # Individual app development (if needed)
@@ -24,9 +24,21 @@ pnpm --filter @bookmark-pro/extension dev
 pnpm build
 
 # Build individual apps
-pnpm --filter @bookmark-pro/web build
+pnpm --filter @bookmark-pro/web build     # Next.js production build
 pnpm --filter @bookmark-pro/extension build
 pnpm --filter @bookmark-pro/ui build
+```
+
+### Next.js Specific Commands
+```bash
+# Development server (port 8080)
+cd apps/web && pnpm dev
+
+# Production build and start
+cd apps/web && pnpm build && pnpm start
+
+# Type checking
+cd apps/web && pnpm run type-check
 ```
 
 ### Linting
@@ -35,7 +47,7 @@ pnpm --filter @bookmark-pro/ui build
 pnpm lint
 
 # Lint specific package
-pnpm --filter @bookmark-pro/web lint
+pnpm --filter @bookmark-pro/web lint      # Next.js ESLint config
 ```
 
 ### Chrome Extension Testing
@@ -52,15 +64,23 @@ pnpm --filter @bookmark-pro/web lint
 ### Package Dependencies
 ```
 @bookmark-pro/ui (packages/ui)
-├── @bookmark-pro/web (apps/web)
-└── @bookmark-pro/extension (apps/extension)
+├── @bookmark-pro/web (apps/web) - Next.js 15 App Router
+└── @bookmark-pro/extension (apps/extension) - Vite + React
 ```
+
+### Web Application Architecture
+- **Framework**: Next.js 15 with App Router
+- **Rendering**: Server-Side Rendering (SSR) + Static Site Generation (SSG)
+- **Routing**: App Router structure (`src/app/` directory)
+- **Styling**: Tailwind CSS with shadcn/ui components
+- **Port**: 8080 (consistent with previous Vite setup)
 
 ### Shared Component System
 - **UI Package**: Central component library using shadcn/ui + Radix UI
-- **Development Mode**: Vite aliases `@bookmark-pro/ui` to source files for instant HMR
+- **Development Mode**: Next.js transpiles `@bookmark-pro/ui` source files for instant HMR
 - **Production Mode**: Uses built dist files with manual type definitions
 - **Type Declarations**: Manual `.d.ts` file at `packages/ui/dist/index.d.ts` (tsup dts generation disabled due to complexity)
+- **SSR Compatibility**: Components work with both server and client rendering
 
 ### Database Architecture (Supabase)
 - **Tables**: `bookmarks`, `profiles` with Row Level Security (RLS)
@@ -75,16 +95,22 @@ pnpm --filter @bookmark-pro/web lint
 
 ## File Organization Patterns
 
-### Standard Directory Structure
+### Next.js App Directory Structure
 ```
 src/
-├── components/          # Feature components
-├── pages/              # Route components (web only)
-├── integrations/       # External service clients
-│   └── supabase/      # Database client & types
-├── lib/               # Utilities
-├── hooks/             # Custom React hooks
-└── contexts/          # React context providers
+├── app/                # Next.js App Router
+│   ├── layout.tsx     # Root layout (server component)
+│   ├── page.tsx       # Home page
+│   ├── providers.tsx  # Client-side providers
+│   ├── auth/          # Auth pages
+│   ├── dashboard/     # Dashboard pages
+│   └── not-found.tsx  # 404 page
+├── components/         # Feature components
+├── pages/             # Legacy page components (still used)
+├── integrations/      # External service clients
+│   └── supabase/     # Database client & types
+├── lib/              # Utilities
+└── contexts/         # React context providers
 ```
 
 ### Component Import Patterns

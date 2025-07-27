@@ -1,3 +1,5 @@
+"use client";
+
 import { supabase } from "@/integrations/supabase/client";
 import {
   Alert,
@@ -17,8 +19,8 @@ import {
   useToast,
 } from "@bookmark-pro/ui";
 import { Bookmark, Eye, EyeOff, Mail } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -26,7 +28,7 @@ const Auth = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
+  const router = useRouter();
   const { toast } = useToast();
 
   useEffect(() => {
@@ -36,11 +38,11 @@ const Auth = () => {
         data: { session },
       } = await supabase.auth.getSession();
       if (session) {
-        navigate("/dashboard");
+        router.push("/dashboard");
       }
     };
     checkUser();
-  }, [navigate]);
+  }, [router]);
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +83,7 @@ const Auth = () => {
     if (error) {
       setError(error.message);
     } else {
-      navigate("/dashboard");
+      router.push("/dashboard");
     }
     setLoading(false);
   };

@@ -1,3 +1,5 @@
+"use client";
+
 import { AddBookmarkDialog } from "@/components/AddBookmarkDialog";
 import { BookmarkCard } from "@/components/BookmarkCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
@@ -14,18 +16,18 @@ import {
 } from "@bookmark-pro/ui";
 import type { Session, User } from "@supabase/supabase-js";
 import { BookmarkPlus, Grid3X3, List, User as UserIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
 
 interface Bookmark {
   id: string;
   title: string;
   url: string;
-  description?: string;
+  description?: string | null;
   category: string;
-  tags: string[];
+  tags: string[] | null;
   created_at: string;
-  favicon?: string;
+  favicon?: string | null;
   user_id: string;
 }
 
@@ -40,7 +42,7 @@ const Dashboard = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
-  const navigate = useNavigate();
+  const router = useRouter();
 
   // Auth effect
   useEffect(() => {
@@ -52,7 +54,7 @@ const Dashboard = () => {
       setUser(session?.user ?? null);
 
       if (!session) {
-        navigate("/auth");
+        router.push("/auth");
       } else {
         // Fetch bookmarks when user logs in
         setTimeout(() => {
@@ -68,14 +70,14 @@ const Dashboard = () => {
       setLoading(false);
 
       if (!session) {
-        navigate("/auth");
+        router.push("/auth");
       } else {
         fetchBookmarks();
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [router]);
 
   // Fetch bookmarks from Supabase
   const fetchBookmarks = async () => {
@@ -105,9 +107,9 @@ const Dashboard = () => {
       const matchesSearch =
         bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         bookmark.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        bookmark.tags.some((tag) =>
+        (bookmark.tags && bookmark.tags.some((tag) =>
           tag.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+        ));
       return matchesCategory && matchesSearch;
     });
   }, [bookmarks, selectedCategory, searchQuery]);
@@ -233,7 +235,7 @@ const Dashboard = () => {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
 
-      navigate("/auth");
+      router.push("/auth");
     } catch (error) {
       console.error("Error signing out:", error);
       toast({
@@ -265,7 +267,7 @@ const Dashboard = () => {
         onSearch={setSearchQuery}
         searchQuery={searchQuery}
         isLoggedIn={!!user}
-        onLogin={() => navigate("/auth")}
+        onLogin={() => router.push("/auth")}
         onLogout={handleLogout}
         user={user}
       />
@@ -279,7 +281,7 @@ const Dashboard = () => {
                 <CategoryFilter
                   categories={categories}
                   selectedCategory={selectedCategory}
-                  onCategorySelect={setSelectedCategory}
+                  onCategorySelect={(category) => setSelectedCategory(category || "전체")}
                   bookmarkCounts={bookmarkCounts}
                 />
               </CardContent>
@@ -318,7 +320,7 @@ const Dashboard = () => {
                       <CategoryFilter
                         categories={categories}
                         selectedCategory={selectedCategory}
-                        onCategorySelect={setSelectedCategory}
+                        onCategorySelect={(category) => setSelectedCategory(category || "전체")}
                         bookmarkCounts={bookmarkCounts}
                       />
                     </CardContent>
@@ -408,9 +410,9 @@ const Dashboard = () => {
                     title={bookmark.title}
                     url={bookmark.url}
                     category={bookmark.category}
-                    tags={bookmark.tags}
+                    tags={bookmark.tags || []}
                     createdAt={bookmark.created_at}
-                    favicon={bookmark.favicon}
+                    favicon={bookmark.favicon || undefined}
                     onEdit={() => handleEditBookmark(bookmark)}
                     onDelete={() => handleDeleteBookmark(bookmark.id)}
                   />
@@ -432,10 +434,15 @@ const Dashboard = () => {
         editingBookmark={
           editingBookmark
             ? {
-                ...editingBookmark,
+                id: editingBookmark.id,
+                title: editingBookmark.title,
+                url: editingBookmark.url,
+                category: editingBookmark.category,
+                tags: editingBookmark.tags || [],
                 createdAt: new Date(editingBookmark.created_at),
+                favicon: editingBookmark.favicon || undefined,
               }
-            : null
+            : undefined
         }
       />
     </div>

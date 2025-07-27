@@ -1,16 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Button, Input, Label, Textarea, Badge } from '@repo/ui'
+import { Button, Input, Label, Textarea, Badge, useToast } from '@repo/ui'
 import { Plus, X } from 'lucide-react'
+import { useAuth } from '../contexts/AuthContext'
+import { saveBookmark } from '../lib/bookmarks'
 
 interface BookmarkFormProps {
   currentUrl: string
   currentTitle: string
-  onSave: (data: {
-    url: string
-    title: string
-    tags: string[]
-    memo?: string
-  }) => void
+  onSave: () => void
   onCancel: () => void
 }
 
@@ -24,6 +21,10 @@ export default function BookmarkForm({
   const [tagInput, setTagInput] = useState('')
   const [tags, setTags] = useState<string[]>([])
   const [memo, setMemo] = useState('')
+  const [category, setCategory] = useState('일반')
+  const [loading, setLoading] = useState(false)
+  const { user } = useAuth()
+  const { toast } = useToast()
 
   useEffect(() => {
     setTitle(currentTitle)
@@ -48,14 +49,41 @@ export default function BookmarkForm({
     }
   }
 
-  const handleSave = () => {
-    if (title.trim()) {
-      onSave({
-        url: currentUrl,
+  const handleSave = async () => {
+    if (!title.trim() || !user) return
+
+    setLoading(true)
+    try {
+      const result = await saveBookmark({
         title: title.trim(),
+        url: currentUrl,
+        description: memo.trim() || undefined,
+        category,
         tags,
-        memo: memo.trim() || undefined
+      }, user.id)
+
+      if (result.success) {
+        toast({
+          title: "북마크 추가됨",
+          description: "새 북마크가 성공적으로 추가되었습니다.",
+        })
+        onSave()
+      } else {
+        toast({
+          title: "오류",
+          description: result.error || "북마크 저장에 실패했습니다.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error('Error saving bookmark:', error)
+      toast({
+        title: "오류",
+        description: "북마크 저장에 실패했습니다.",
+        variant: "destructive",
       })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -93,11 +121,24 @@ export default function BookmarkForm({
         </div>
 
         <div>
-          <Label className="text-sm font-medium text-gray-700 mb-1">메모</Label>
+          <Label htmlFor="category" className="text-sm font-medium text-gray-700 mb-1">
+            카테고리
+          </Label>
+          <Input
+            id="category"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            placeholder="카테고리를 입력하세요"
+            className="text-sm"
+          />
+        </div>
+
+        <div>
+          <Label className="text-sm font-medium text-gray-700 mb-1">설명</Label>
           <Textarea
             value={memo}
             onChange={(e) => setMemo(e.target.value)}
-            placeholder="북마크에 대한 메모를 남겨보세요"
+            placeholder="북마크에 대한 설명을 남겨보세요"
             rows={2}
             maxLength={200}
             className="text-sm resize-none"
@@ -158,10 +199,10 @@ export default function BookmarkForm({
         </Button>
         <Button
           onClick={handleSave}
-          disabled={!title.trim()}
+          disabled={!title.trim() || loading || !user}
           className="flex-1 bg-primary-500 hover:bg-primary-600 text-white text-sm"
         >
-          저장
+          {loading ? "저장 중..." : "저장"}
         </Button>
       </div>
     </div>

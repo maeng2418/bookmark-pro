@@ -4,7 +4,7 @@ import { Bookmark, Plus, LogOut } from 'lucide-react'
 import BookmarkForm from './components/BookmarkForm'
 import AuthScreen from './components/AuthScreen'
 import { useAuth } from './contexts/AuthContext'
-import { getCurrentTab, saveBookmark } from './lib/extension'
+import { getCurrentTab } from './lib/extension'
 
 export default function App() {
   const { user, loading: authLoading, signOut } = useAuth()
@@ -27,20 +27,9 @@ export default function App() {
     loadCurrentTab()
   }, [])
 
-  const handleSaveBookmark = async (bookmarkData: {
-    url: string
-    title: string
-    tags: string[]
-    memo?: string
-  }) => {
-    try {
-      await saveBookmark(bookmarkData, user?.id)
-      setShowForm(false)
-      // 성공 메시지 표시 또는 팝업 닫기
-      window.close()
-    } catch (error) {
-      console.error('Failed to save bookmark:', error)
-    }
+  const handleSaveSuccess = () => {
+    setShowForm(false)
+    window.close()
   }
 
   const handleSignOut = async () => {
@@ -67,7 +56,7 @@ export default function App() {
         <BookmarkForm
           currentUrl={currentTab.url || ''}
           currentTitle={currentTab.title || ''}
-          onSave={handleSaveBookmark}
+          onSave={handleSaveSuccess}
           onCancel={() => setShowForm(false)}
         />
       </div>

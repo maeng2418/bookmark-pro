@@ -1,6 +1,11 @@
 "use client";
 
-import Dashboard from "@/pages/Dashboard";
+import dynamic from "next/dynamic";
+
+const Dashboard = dynamic(() => import("@/components/Dashboard"), {
+  ssr: false,
+  loading: () => <div className="flex items-center justify-center min-h-screen">Loading...</div>
+});
 
 export default function DashboardPage() {
   return <Dashboard />;

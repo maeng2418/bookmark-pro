@@ -108,13 +108,13 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 flex items-center justify-center p-4">
+    <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-4">
+        <div className="mb-8 text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gradient-primary rounded-2xl">
             <Bookmark className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-foreground">
             Bookmark Pro
           </h1>
           <p className="text-muted-foreground">
@@ -141,7 +141,7 @@ const Auth = () => {
             <Button
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full mb-6 bg-white hover:bg-gray-50 text-gray-900 border border-gray-300"
+              className="w-full mb-6 text-gray-900 bg-white border border-gray-300 hover:bg-gray-50"
               variant="outline"
             >
               <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
@@ -170,7 +170,7 @@ const Auth = () => {
                 <span className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card px-2 text-muted-foreground">또는</span>
+                <span className="px-2 bg-card text-muted-foreground">또는</span>
               </div>
             </div>
 
@@ -185,7 +185,7 @@ const Auth = () => {
                   <div className="space-y-2">
                     <Label htmlFor="signin-email">이메일</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Mail className="absolute w-4 h-4 left-3 top-3 text-muted-foreground" />
                       <Input
                         id="signin-email"
                         type="email"
@@ -213,13 +213,13 @@ const Auth = () => {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          <EyeOff className="w-4 h-4 text-muted-foreground" />
                         ) : (
-                          <Eye className="h-4 w-4 text-muted-foreground" />
+                          <Eye className="w-4 h-4 text-muted-foreground" />
                         )}
                       </Button>
                     </div>
@@ -235,7 +235,7 @@ const Auth = () => {
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">이메일</Label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                      <Mail className="absolute w-4 h-4 left-3 top-3 text-muted-foreground" />
                       <Input
                         id="signup-email"
                         type="email"
@@ -264,13 +264,13 @@ const Auth = () => {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
-                          <EyeOff className="h-4 w-4 text-muted-foreground" />
+                          <EyeOff className="w-4 h-4 text-muted-foreground" />
                         ) : (
-                          <Eye className="h-4 w-4 text-muted-foreground" />
+                          <Eye className="w-4 h-4 text-muted-foreground" />
                         )}
                       </Button>
                     </div>

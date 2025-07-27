@@ -18,6 +18,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@bookmark-pro/tsconfig": "workspace:*",
     "@types/chrome": "^0.0.276",
     "@types/node": "^22.5.5",
     "@types/react": "^18.3.3",

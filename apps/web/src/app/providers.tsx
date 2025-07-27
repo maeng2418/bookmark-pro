@@ -1,9 +1,28 @@
 "use client";
 
-import { Toaster as Sonner, Toaster, TooltipProvider } from "@bookmark-pro/ui";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
+import dynamic from "next/dynamic";
 import { useState } from "react";
+
+const TooltipProvider = dynamic(
+  () =>
+    import("@bookmark-pro/ui").then((mod) => ({
+      default: mod.TooltipProvider,
+    })),
+  { ssr: false }
+);
+
+const Toaster = dynamic(
+  () => import("@bookmark-pro/ui").then((mod) => ({ default: mod.Toaster })),
+  { ssr: false }
+);
+
+const SonnerToaster = dynamic(
+  () =>
+    import("@bookmark-pro/ui").then((mod) => ({ default: mod.SonnerToaster })),
+  { ssr: false }
+);
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -28,7 +47,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
           <Toaster />
-          <Sonner />
+          <SonnerToaster />
           {children}
         </TooltipProvider>
       </QueryClientProvider>

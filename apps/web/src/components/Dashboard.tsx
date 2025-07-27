@@ -1,9 +1,5 @@
 "use client";
 
-import { AddBookmarkDialog } from "@/components/AddBookmarkDialog";
-import { BookmarkCard } from "@/components/BookmarkCard";
-import { CategoryFilter } from "@/components/CategoryFilter";
-import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Button,
@@ -17,7 +13,11 @@ import {
 import type { Session, User } from "@supabase/supabase-js";
 import { BookmarkPlus, Grid3X3, List, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AddBookmarkDialog } from "./AddBookmarkDialog";
+import { BookmarkCard } from "./BookmarkCard";
+import { CategoryFilter } from "./CategoryFilter";
+import { Header } from "./Header";
 
 interface Bookmark {
   id: string;
@@ -105,9 +105,10 @@ const Dashboard = () => {
       const matchesSearch =
         bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         bookmark.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (bookmark.tags && bookmark.tags.some((tag) =>
-          tag.toLowerCase().includes(searchQuery.toLowerCase())
-        ));
+        (bookmark.tags &&
+          bookmark.tags.some((tag) =>
+            tag.toLowerCase().includes(searchQuery.toLowerCase())
+          ));
       return matchesCategory && matchesSearch;
     });
   }, [bookmarks, selectedCategory, searchQuery]);
@@ -247,9 +248,9 @@ const Dashboard = () => {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-4 animate-pulse">
+          <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gradient-primary rounded-2xl animate-pulse">
             <UserIcon className="w-8 h-8 text-white" />
           </div>
           <p className="text-muted-foreground">로딩 중...</p>
@@ -270,16 +271,18 @@ const Dashboard = () => {
         user={user}
       />
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container px-4 py-6 mx-auto">
         <div className="flex gap-6">
           {/* Desktop Sidebar */}
-          <div className="hidden lg:block w-64 space-y-4">
+          <div className="hidden w-64 space-y-4 lg:block">
             <Card className="backdrop-blur-sm bg-card/50 border-border/50">
               <CardContent className="p-4">
                 <CategoryFilter
                   categories={categories}
                   selectedCategory={selectedCategory}
-                  onCategorySelect={(category) => setSelectedCategory(category || "전체")}
+                  onCategorySelect={(category) =>
+                    setSelectedCategory(category || "전체")
+                  }
                   bookmarkCounts={bookmarkCounts}
                 />
               </CardContent>
@@ -292,7 +295,7 @@ const Dashboard = () => {
             <div className="lg:hidden">
               <Collapsible>
                 <CollapsibleTrigger asChild>
-                  <Button variant="outline" className="w-full justify-between">
+                  <Button variant="outline" className="justify-between w-full">
                     카테고리 필터
                     <svg
                       width="15"
@@ -300,7 +303,7 @@ const Dashboard = () => {
                       viewBox="0 0 15 15"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4"
+                      className="w-4 h-4"
                     >
                       <path
                         d="m4.5 6 3 3 3-3"
@@ -318,7 +321,9 @@ const Dashboard = () => {
                       <CategoryFilter
                         categories={categories}
                         selectedCategory={selectedCategory}
-                        onCategorySelect={(category) => setSelectedCategory(category || "전체")}
+                        onCategorySelect={(category) =>
+                          setSelectedCategory(category || "전체")
+                        }
                         bookmarkCounts={bookmarkCounts}
                       />
                     </CardContent>
@@ -351,7 +356,7 @@ const Dashboard = () => {
                       : ""
                   }
                 >
-                  <Grid3X3 className="h-4 w-4" />
+                  <Grid3X3 className="w-4 h-4" />
                 </Button>
                 <Button
                   variant={viewMode === "list" ? "default" : "outline"}
@@ -363,15 +368,15 @@ const Dashboard = () => {
                       : ""
                   }
                 >
-                  <List className="h-4 w-4" />
+                  <List className="w-4 h-4" />
                 </Button>
               </div>
             </div>
 
             {/* Bookmarks Grid/List */}
             {filteredBookmarks.length === 0 ? (
-              <div className="text-center py-16 space-y-4">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-4">
+              <div className="py-16 space-y-4 text-center">
+                <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gradient-primary rounded-2xl">
                   <BookmarkPlus className="w-8 h-8 text-white" />
                 </div>
                 <div>
@@ -387,7 +392,7 @@ const Dashboard = () => {
                 {!searchQuery && (
                   <Button
                     onClick={() => setIsAddDialogOpen(true)}
-                    className="bg-gradient-primary hover:opacity-90 text-white"
+                    className="text-white bg-gradient-primary hover:opacity-90"
                   >
                     북마크 추가하기
                   </Button>

@@ -1,0 +1,8 @@
+{
+  "name": "@bookmark-pro/tsconfig",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'No build needed for tsconfig package'"
+  }
+}

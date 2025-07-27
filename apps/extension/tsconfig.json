@@ -16,7 +16,8 @@
     "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@bookmark-pro/ui": ["../../packages/ui/src"]
     },
     "types": ["chrome", "vite/client"]
   },

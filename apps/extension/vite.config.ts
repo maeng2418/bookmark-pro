@@ -15,9 +15,7 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: {
         '@': resolve(__dirname, 'src'),
-        "@bookmark-pro/ui": mode === "development" 
-          ? resolve(__dirname, "../../packages/ui/src") 
-          : "@bookmark-pro/ui",
+        "@bookmark-pro/ui": resolve(__dirname, "../../packages/ui/src"),
       },
     },
     optimizeDeps: {

@@ -13,7 +13,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-  toast,
+  useToast,
 } from "@bookmark-pro/ui";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
@@ -34,6 +34,7 @@ export const AddBookmarkDialog = ({
   categories,
   editingBookmark,
 }: AddBookmarkDialogProps) => {
+  const { toast } = useToast();
   const [title, setTitle] = useState(editingBookmark?.title || "");
   const [url, setUrl] = useState(editingBookmark?.url || "");
   const [category, setCategory] = useState(editingBookmark?.category || "");

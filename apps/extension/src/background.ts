@@ -32,7 +32,14 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 })
 
-async function handleSaveBookmark(bookmarkData: any) {
+interface BookmarkData {
+  title: string;
+  url: string;
+  category: string;
+  tags: string[];
+}
+
+async function handleSaveBookmark(bookmarkData: BookmarkData) {
   // 북마크 저장 처리
   const bookmarks = await chrome.storage.local.get(['bookmarks'])
   const currentBookmarks = bookmarks.bookmarks || []

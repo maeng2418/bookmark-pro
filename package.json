@@ -14,8 +14,9 @@
   },
   "devDependencies": {
     "@turbo/gen": "^2.3.2",
-    "turbo": "^2.3.2",
-    "prettier": "^3.2.5"
+    "dotenv": "^17.2.1",
+    "prettier": "^3.2.5",
+    "turbo": "^2.3.2"
   },
   "engines": {
     "node": ">=20"

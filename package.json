@@ -8,7 +8,9 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "clean": "turbo clean"
+    "clean": "turbo clean",
+    "web:dev": "pnpm --filter=@bookmark-pro/web dev",
+    "extension:dev": "pnpm --filter=@bookmark-pro/extension dev"
   },
   "devDependencies": {
     "@turbo/gen": "^2.3.2",

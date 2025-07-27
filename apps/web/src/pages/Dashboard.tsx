@@ -17,7 +17,7 @@ import {
 import type { Session, User } from "@supabase/supabase-js";
 import { BookmarkPlus, Grid3X3, List, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 
 interface Bookmark {
   id: string;
@@ -43,6 +43,26 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const router = useRouter();
+
+  // Fetch bookmarks from Supabase
+  const fetchBookmarks = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from("bookmarks")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      setBookmarks(data || []);
+    } catch (error) {
+      console.error("Error fetching bookmarks:", error);
+      toast({
+        title: "오류",
+        description: "북마크를 불러오는데 실패했습니다.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   // Auth effect
   useEffect(() => {
@@ -76,26 +96,6 @@ const Dashboard = () => {
 
     return () => subscription.unsubscribe();
   }, [router, fetchBookmarks]);
-
-  // Fetch bookmarks from Supabase
-  const fetchBookmarks = useCallback(async () => {
-    try {
-      const { data, error } = await supabase
-        .from("bookmarks")
-        .select("*")
-        .order("created_at", { ascending: false });
-
-      if (error) throw error;
-      setBookmarks(data || []);
-    } catch (error) {
-      console.error("Error fetching bookmarks:", error);
-      toast({
-        title: "오류",
-        description: "북마크를 불러오는데 실패했습니다.",
-        variant: "destructive",
-      });
-    }
-  }, [toast]);
 
   // Memoized filtered bookmarks
   const filteredBookmarks = useMemo(() => {

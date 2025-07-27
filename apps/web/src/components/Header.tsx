@@ -11,7 +11,7 @@ interface HeaderProps {
   onLogin: () => void;
   onLogout: () => void;
   userEmail?: string;
-  user?: SupabaseUser;
+  user?: SupabaseUser | null;
 }
 
 export const Header = ({

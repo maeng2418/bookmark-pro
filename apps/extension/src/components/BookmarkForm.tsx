@@ -1,97 +1,107 @@
-import { useState, useEffect } from 'react'
-import { Button, Input, Label, Textarea, Badge, useToast } from '@repo/ui'
-import { Plus, X } from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
-import { saveBookmark } from '../lib/bookmarks'
+import {
+  Badge,
+  Button,
+  Input,
+  Label,
+  Textarea,
+  useToast,
+} from "@bookmark-pro/ui";
+import { Plus, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useAuth } from "../contexts/AuthContext";
+import { saveBookmark } from "../lib/bookmarks";
 
 interface BookmarkFormProps {
-  currentUrl: string
-  currentTitle: string
-  onSave: () => void
-  onCancel: () => void
+  currentUrl: string;
+  currentTitle: string;
+  onSave: () => void;
+  onCancel: () => void;
 }
 
-export default function BookmarkForm({ 
-  currentUrl, 
+export default function BookmarkForm({
+  currentUrl,
   currentTitle,
-  onSave, 
-  onCancel 
+  onSave,
+  onCancel,
 }: BookmarkFormProps) {
-  const [title, setTitle] = useState(currentTitle)
-  const [tagInput, setTagInput] = useState('')
-  const [tags, setTags] = useState<string[]>([])
-  const [memo, setMemo] = useState('')
-  const [category, setCategory] = useState('일반')
-  const [loading, setLoading] = useState(false)
-  const { user } = useAuth()
-  const { toast } = useToast()
+  const [title, setTitle] = useState(currentTitle);
+  const [tagInput, setTagInput] = useState("");
+  const [tags, setTags] = useState<string[]>([]);
+  const [memo, setMemo] = useState("");
+  const [category, setCategory] = useState("일반");
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   useEffect(() => {
-    setTitle(currentTitle)
-  }, [currentTitle])
+    setTitle(currentTitle);
+  }, [currentTitle]);
 
   const handleAddTag = () => {
-    const trimmedTag = tagInput.trim()
+    const trimmedTag = tagInput.trim();
     if (trimmedTag && !tags.includes(trimmedTag)) {
-      setTags([...tags, trimmedTag])
-      setTagInput('')
+      setTags([...tags, trimmedTag]);
+      setTagInput("");
     }
-  }
+  };
 
   const handleRemoveTag = (tagToRemove: string) => {
-    setTags(tags.filter(tag => tag !== tagToRemove))
-  }
+    setTags(tags.filter((tag) => tag !== tagToRemove));
+  };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      handleAddTag()
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleAddTag();
     }
-  }
+  };
 
   const handleSave = async () => {
-    if (!title.trim() || !user) return
+    if (!title.trim() || !user) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const result = await saveBookmark({
-        title: title.trim(),
-        url: currentUrl,
-        description: memo.trim() || undefined,
-        category,
-        tags,
-      }, user.id)
+      const result = await saveBookmark(
+        {
+          title: title.trim(),
+          url: currentUrl,
+          description: memo.trim() || undefined,
+          category,
+          tags,
+        },
+        user.id
+      );
 
       if (result.success) {
         toast({
           title: "북마크 추가됨",
           description: "새 북마크가 성공적으로 추가되었습니다.",
-        })
-        onSave()
+        });
+        onSave();
       } else {
         toast({
           title: "오류",
           description: result.error || "북마크 저장에 실패했습니다.",
           variant: "destructive",
-        })
+        });
       }
     } catch (error) {
-      console.error('Error saving bookmark:', error)
+      console.error("Error saving bookmark:", error);
       toast({
         title: "오류",
         description: "북마크 저장에 실패했습니다.",
         variant: "destructive",
-      })
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="p-4 space-y-4 max-h-96 overflow-y-auto">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-semibold">북마크 저장</h2>
-        <button 
+        <button
           onClick={onCancel}
           className="w-6 h-6 flex items-center justify-center hover:bg-gray-100 rounded transition-colors"
         >
@@ -108,7 +118,10 @@ export default function BookmarkForm({
         </div>
 
         <div>
-          <Label htmlFor="title" className="text-sm font-medium text-gray-700 mb-1">
+          <Label
+            htmlFor="title"
+            className="text-sm font-medium text-gray-700 mb-1"
+          >
             제목 *
           </Label>
           <Input
@@ -121,7 +134,10 @@ export default function BookmarkForm({
         </div>
 
         <div>
-          <Label htmlFor="category" className="text-sm font-medium text-gray-700 mb-1">
+          <Label
+            htmlFor="category"
+            className="text-sm font-medium text-gray-700 mb-1"
+          >
             카테고리
           </Label>
           <Input
@@ -158,18 +174,14 @@ export default function BookmarkForm({
               placeholder="태그를 입력하세요"
               className="text-sm"
             />
-            <Button
-              onClick={handleAddTag}
-              size="sm"
-              className="px-3"
-            >
+            <Button onClick={handleAddTag} size="sm" className="px-3">
               <Plus className="w-3 h-3" />
             </Button>
           </div>
-          
+
           {tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
-              {tags.map(tag => (
+              {tags.map((tag) => (
                 <Badge
                   key={tag}
                   variant="secondary"
@@ -190,11 +202,7 @@ export default function BookmarkForm({
       </div>
 
       <div className="flex space-x-2 mt-4 pt-3 border-t border-gray-200">
-        <Button
-          variant="outline"
-          onClick={onCancel}
-          className="flex-1 text-sm"
-        >
+        <Button variant="outline" onClick={onCancel} className="flex-1 text-sm">
           취소
         </Button>
         <Button
@@ -206,5 +214,5 @@ export default function BookmarkForm({
         </Button>
       </div>
     </div>
-  )
+  );
 }

@@ -1,9 +1,24 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button, Input, Card, CardContent, CardDescription, CardHeader, CardTitle, Tabs, TabsContent, TabsList, TabsTrigger, Label, Alert, AlertDescription } from "@repo/ui";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@repo/ui";
-import { Bookmark, Mail, Eye, EyeOff } from "lucide-react";
+import {
+  Alert,
+  AlertDescription,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Input,
+  Label,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  useToast,
+} from "@bookmark-pro/ui";
+import { Bookmark, Eye, EyeOff, Mail } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -17,7 +32,9 @@ const Auth = () => {
   useEffect(() => {
     // Check if user is already logged in
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (session) {
         navigate("/dashboard");
       }
@@ -36,8 +53,8 @@ const Auth = () => {
       email,
       password,
       options: {
-        emailRedirectTo: redirectUrl
-      }
+        emailRedirectTo: redirectUrl,
+      },
     });
 
     if (error) {
@@ -76,10 +93,10 @@ const Auth = () => {
     const redirectUrl = `${window.location.origin}/dashboard`;
 
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+      provider: "google",
       options: {
-        redirectTo: redirectUrl
-      }
+        redirectTo: redirectUrl,
+      },
     });
 
     if (error) {
@@ -95,8 +112,12 @@ const Auth = () => {
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-primary rounded-2xl mb-4">
             <Bookmark className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">Bookmark Pro</h1>
-          <p className="text-muted-foreground">북마크를 스마트하게 관리하세요</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            Bookmark Pro
+          </h1>
+          <p className="text-muted-foreground">
+            북마크를 스마트하게 관리하세요
+          </p>
         </div>
 
         <Card className="backdrop-blur-sm bg-card/50 border-border/50">

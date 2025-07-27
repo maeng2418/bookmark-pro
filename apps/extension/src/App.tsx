@@ -1,66 +1,66 @@
-import { useState, useEffect } from 'react'
-import { Button } from '@repo/ui'
-import { Bookmark, Plus, LogOut } from 'lucide-react'
-import BookmarkForm from './components/BookmarkForm'
-import AuthScreen from './components/AuthScreen'
-import { useAuth } from './contexts/AuthContext'
-import { getCurrentTab } from './lib/extension'
+import { Button } from "@bookmark-pro/ui";
+import { Bookmark, LogOut, Plus } from "lucide-react";
+import { useEffect, useState } from "react";
+import AuthScreen from "./components/AuthScreen";
+import BookmarkForm from "./components/BookmarkForm";
+import { useAuth } from "./contexts/AuthContext";
+import { getCurrentTab } from "./lib/extension";
 
 export default function App() {
-  const { user, loading: authLoading, signOut } = useAuth()
-  const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null)
-  const [showForm, setShowForm] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const { user, loading: authLoading, signOut } = useAuth();
+  const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadCurrentTab = async () => {
       try {
-        const tab = await getCurrentTab()
-        setCurrentTab(tab)
+        const tab = await getCurrentTab();
+        setCurrentTab(tab);
       } catch (error) {
-        console.error('Failed to get current tab:', error)
+        console.error("Failed to get current tab:", error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
-    }
+    };
 
-    loadCurrentTab()
-  }, [])
+    loadCurrentTab();
+  }, []);
 
   const handleSaveSuccess = () => {
-    setShowForm(false)
-    window.close()
-  }
+    setShowForm(false);
+    window.close();
+  };
 
   const handleSignOut = async () => {
-    await signOut()
-    setShowForm(false)
-  }
+    await signOut();
+    setShowForm(false);
+  };
 
   if (authLoading || loading) {
     return (
       <div className="w-80 h-60 flex items-center justify-center bg-white">
         <div className="text-gray-500">로딩중...</div>
       </div>
-    )
+    );
   }
 
   // 로그인하지 않은 경우 인증 화면 표시
   if (!user) {
-    return <AuthScreen />
+    return <AuthScreen />;
   }
 
   if (showForm && currentTab) {
     return (
       <div className="w-96 bg-white">
         <BookmarkForm
-          currentUrl={currentTab.url || ''}
-          currentTitle={currentTab.title || ''}
+          currentUrl={currentTab.url || ""}
+          currentTitle={currentTab.title || ""}
           onSave={handleSaveSuccess}
           onCancel={() => setShowForm(false)}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -82,9 +82,7 @@ export default function App() {
           </button>
         </div>
         <div className="mt-2">
-          <p className="text-xs text-gray-600">
-            {user.email}
-          </p>
+          <p className="text-xs text-gray-600">{user.email}</p>
         </div>
       </div>
 
@@ -92,13 +90,13 @@ export default function App() {
         {currentTab && (
           <div className="space-y-3">
             <div>
-              <h2 className="text-sm font-medium text-gray-700 mb-1">현재 페이지</h2>
+              <h2 className="text-sm font-medium text-gray-700 mb-1">
+                현재 페이지
+              </h2>
               <p className="text-sm text-gray-900 font-medium truncate">
                 {currentTab.title}
               </p>
-              <p className="text-xs text-gray-500 truncate">
-                {currentTab.url}
-              </p>
+              <p className="text-xs text-gray-500 truncate">{currentTab.url}</p>
             </div>
 
             <Button
@@ -116,7 +114,7 @@ export default function App() {
             variant="outline"
             className="w-full text-sm"
             onClick={() => {
-              chrome.tabs.create({ url: 'http://localhost:8080' })
+              chrome.tabs.create({ url: "http://localhost:8080" });
             }}
           >
             BookmarkPro 웹 열기
@@ -124,5 +122,5 @@ export default function App() {
         </div>
       </div>
     </div>
-  )
+  );
 }

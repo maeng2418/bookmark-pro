@@ -1,5 +1,12 @@
-import { Button, Badge, Card, CardContent, CardFooter, CardHeader } from "@repo/ui";
-import { ExternalLink, Trash2, Edit3, Globe } from "lucide-react";
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@bookmark-pro/ui";
+import { Edit3, ExternalLink, Globe, Trash2 } from "lucide-react";
 
 export interface Bookmark {
   id: string;
@@ -36,17 +43,17 @@ interface BookmarkCardProps {
   onDelete: (id: string) => void;
 }
 
-export const BookmarkCard = ({ 
-  bookmark, 
-  id, 
-  title, 
-  url, 
-  category, 
-  tags, 
-  createdAt, 
-  favicon, 
-  onEdit, 
-  onDelete 
+export const BookmarkCard = ({
+  bookmark,
+  id,
+  title,
+  url,
+  category,
+  tags,
+  createdAt,
+  favicon,
+  onEdit,
+  onDelete,
 }: BookmarkCardProps) => {
   // Use bookmark data if provided, otherwise use individual props
   const bookmarkData = bookmark || {
@@ -56,10 +63,10 @@ export const BookmarkCard = ({
     category: category!,
     tags: tags || [],
     createdAt: createdAt ? new Date(createdAt) : new Date(),
-    favicon
+    favicon,
   };
   const handleVisit = () => {
-    window.open(bookmarkData.url, '_blank');
+    window.open(bookmarkData.url, "_blank");
   };
 
   const getDomainFromUrl = (url: string) => {
@@ -83,8 +90,12 @@ export const BookmarkCard = ({
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-sm leading-tight truncate">{bookmarkData.title}</h3>
-              <p className="text-xs text-muted-foreground truncate">{getDomainFromUrl(bookmarkData.url)}</p>
+              <h3 className="font-semibold text-sm leading-tight truncate">
+                {bookmarkData.title}
+              </h3>
+              <p className="text-xs text-muted-foreground truncate">
+                {getDomainFromUrl(bookmarkData.url)}
+              </p>
             </div>
           </div>
           <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -113,7 +124,7 @@ export const BookmarkCard = ({
           <Badge variant="secondary" className="text-xs">
             {bookmarkData.category}
           </Badge>
-          
+
           {bookmarkData.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {bookmarkData.tags.map((tag, index) => (

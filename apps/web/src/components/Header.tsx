@@ -1,4 +1,4 @@
-import { Button, Input } from "@repo/ui";
+import { Button, Input } from "@bookmark-pro/ui";
 import { Bookmark, Plus, Search, User } from "lucide-react";
 
 interface HeaderProps {
@@ -22,7 +22,7 @@ export const Header = ({
   onLogin,
   onLogout,
   userEmail,
-  user
+  user,
 }: HeaderProps) => {
   const handleSearchChange = onSearch || onSearchChange || (() => {});
   return (
@@ -52,24 +52,32 @@ export const Header = ({
 
           <div className="flex items-center gap-2">
             {isLoggedIn && (
-              <Button onClick={onAddBookmark} className="bg-bookmark-gradient hover:opacity-90">
+              <Button
+                onClick={onAddBookmark}
+                className="bg-bookmark-gradient hover:opacity-90"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 추가
               </Button>
             )}
-            
+
             {isLoggedIn ? (
               <div className="flex items-center gap-2">
                 <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
                   <User className="h-4 w-4" />
-                  <span className="text-sm">{userEmail || user?.email || "사용자"}</span>
+                  <span className="text-sm">
+                    {userEmail || user?.email || "사용자"}
+                  </span>
                 </div>
                 <Button variant="outline" onClick={onLogout}>
                   로그아웃
                 </Button>
               </div>
             ) : (
-              <Button onClick={onLogin} className="bg-bookmark-gradient hover:opacity-90">
+              <Button
+                onClick={onLogin}
+                className="bg-bookmark-gradient hover:opacity-90"
+              >
                 구글 로그인
               </Button>
             )}

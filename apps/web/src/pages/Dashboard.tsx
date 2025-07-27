@@ -1,19 +1,21 @@
-import React, { useState, useMemo, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button, Card, CardContent, useToast } from "@repo/ui";
-import { Header } from "@/components/Header";
-import { BookmarkCard } from "@/components/BookmarkCard";
 import { AddBookmarkDialog } from "@/components/AddBookmarkDialog";
+import { BookmarkCard } from "@/components/BookmarkCard";
 import { CategoryFilter } from "@/components/CategoryFilter";
+import { Header } from "@/components/Header";
 import { supabase } from "@/integrations/supabase/client";
-import type { User, Session } from "@supabase/supabase-js";
-import { 
-  Grid3X3, 
-  List, 
-  User as UserIcon, 
-  BookmarkPlus
-} from "lucide-react";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@repo/ui";
+import {
+  Button,
+  Card,
+  CardContent,
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+  useToast,
+} from "@bookmark-pro/ui";
+import type { Session, User } from "@supabase/supabase-js";
+import { BookmarkPlus, Grid3X3, List, User as UserIcon } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Bookmark {
   id: string;
@@ -43,30 +45,30 @@ const Dashboard = () => {
   // Auth effect
   useEffect(() => {
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (!session) {
-          navigate('/auth');
-        } else {
-          // Fetch bookmarks when user logs in
-          setTimeout(() => {
-            fetchBookmarks();
-          }, 0);
-        }
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+
+      if (!session) {
+        navigate("/auth");
+      } else {
+        // Fetch bookmarks when user logs in
+        setTimeout(() => {
+          fetchBookmarks();
+        }, 0);
       }
-    );
+    });
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-      
+
       if (!session) {
-        navigate('/auth');
+        navigate("/auth");
       } else {
         fetchBookmarks();
       }
@@ -79,14 +81,14 @@ const Dashboard = () => {
   const fetchBookmarks = async () => {
     try {
       const { data, error } = await supabase
-        .from('bookmarks')
-        .select('*')
-        .order('created_at', { ascending: false });
+        .from("bookmarks")
+        .select("*")
+        .order("created_at", { ascending: false });
 
       if (error) throw error;
       setBookmarks(data || []);
     } catch (error) {
-      console.error('Error fetching bookmarks:', error);
+      console.error("Error fetching bookmarks:", error);
       toast({
         title: "오류",
         description: "북마크를 불러오는데 실패했습니다.",
@@ -97,38 +99,46 @@ const Dashboard = () => {
 
   // Memoized filtered bookmarks
   const filteredBookmarks = useMemo(() => {
-    return bookmarks.filter(bookmark => {
-      const matchesCategory = selectedCategory === "전체" || bookmark.category === selectedCategory;
-      const matchesSearch = bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          bookmark.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                          bookmark.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+    return bookmarks.filter((bookmark) => {
+      const matchesCategory =
+        selectedCategory === "전체" || bookmark.category === selectedCategory;
+      const matchesSearch =
+        bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bookmark.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bookmark.tags.some((tag) =>
+          tag.toLowerCase().includes(searchQuery.toLowerCase())
+        );
       return matchesCategory && matchesSearch;
     });
   }, [bookmarks, selectedCategory, searchQuery]);
 
   // Memoized categories
   const categories = useMemo(() => {
-    const uniqueCategories = Array.from(new Set(bookmarks.map(b => b.category)));
+    const uniqueCategories = Array.from(
+      new Set(bookmarks.map((b) => b.category))
+    );
     return ["전체", ...uniqueCategories];
   }, [bookmarks]);
 
   // Memoized bookmark counts
   const bookmarkCounts = useMemo(() => {
-    const counts: Record<string, number> = { "전체": bookmarks.length };
-    bookmarks.forEach(bookmark => {
+    const counts: Record<string, number> = { 전체: bookmarks.length };
+    bookmarks.forEach((bookmark) => {
       counts[bookmark.category] = (counts[bookmark.category] || 0) + 1;
     });
     return counts;
   }, [bookmarks]);
 
-  const handleSaveBookmark = async (bookmarkData: Omit<Bookmark, "id" | "created_at" | "user_id">) => {
+  const handleSaveBookmark = async (
+    bookmarkData: Omit<Bookmark, "id" | "created_at" | "user_id">
+  ) => {
     if (!user) return;
 
     try {
       if (editingBookmark) {
         // Update existing bookmark
         const { error } = await supabase
-          .from('bookmarks')
+          .from("bookmarks")
           .update({
             title: bookmarkData.title,
             url: bookmarkData.url,
@@ -137,7 +147,7 @@ const Dashboard = () => {
             tags: bookmarkData.tags,
             favicon: bookmarkData.favicon,
           })
-          .eq('id', editingBookmark.id);
+          .eq("id", editingBookmark.id);
 
         if (error) throw error;
 
@@ -148,10 +158,10 @@ const Dashboard = () => {
       } else {
         // Check for duplicate URL
         const { data: existingBookmarks } = await supabase
-          .from('bookmarks')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('url', bookmarkData.url);
+          .from("bookmarks")
+          .select("id")
+          .eq("user_id", user.id)
+          .eq("url", bookmarkData.url);
 
         if (existingBookmarks && existingBookmarks.length > 0) {
           toast({
@@ -163,12 +173,10 @@ const Dashboard = () => {
         }
 
         // Add new bookmark
-        const { error } = await supabase
-          .from('bookmarks')
-          .insert({
-            ...bookmarkData,
-            user_id: user.id,
-          });
+        const { error } = await supabase.from("bookmarks").insert({
+          ...bookmarkData,
+          user_id: user.id,
+        });
 
         if (error) throw error;
 
@@ -183,7 +191,7 @@ const Dashboard = () => {
       setIsAddDialogOpen(false);
       setEditingBookmark(null);
     } catch (error) {
-      console.error('Error saving bookmark:', error);
+      console.error("Error saving bookmark:", error);
       toast({
         title: "오류",
         description: "북마크 저장에 실패했습니다.",
@@ -199,10 +207,7 @@ const Dashboard = () => {
 
   const handleDeleteBookmark = async (id: string) => {
     try {
-      const { error } = await supabase
-        .from('bookmarks')
-        .delete()
-        .eq('id', id);
+      const { error } = await supabase.from("bookmarks").delete().eq("id", id);
 
       if (error) throw error;
 
@@ -214,7 +219,7 @@ const Dashboard = () => {
       // Refresh bookmarks
       fetchBookmarks();
     } catch (error) {
-      console.error('Error deleting bookmark:', error);
+      console.error("Error deleting bookmark:", error);
       toast({
         title: "오류",
         description: "북마크 삭제에 실패했습니다.",
@@ -227,10 +232,10 @@ const Dashboard = () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      
-      navigate('/auth');
+
+      navigate("/auth");
     } catch (error) {
-      console.error('Error signing out:', error);
+      console.error("Error signing out:", error);
       toast({
         title: "오류",
         description: "로그아웃에 실패했습니다.",
@@ -260,7 +265,7 @@ const Dashboard = () => {
         onSearch={setSearchQuery}
         searchQuery={searchQuery}
         isLoggedIn={!!user}
-        onLogin={() => navigate('/auth')}
+        onLogin={() => navigate("/auth")}
         onLogout={handleLogout}
         user={user}
       />
@@ -326,19 +331,25 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-semibold text-foreground">
-                  {selectedCategory === "전체" ? "전체 북마크" : `${selectedCategory} 카테고리`}
+                  {selectedCategory === "전체"
+                    ? "전체 북마크"
+                    : `${selectedCategory} 카테고리`}
                 </h2>
                 <span className="text-sm text-muted-foreground">
                   ({filteredBookmarks.length}개)
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <Button
                   variant={viewMode === "grid" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setViewMode("grid")}
-                  className={viewMode === "grid" ? "bg-primary text-primary-foreground" : ""}
+                  className={
+                    viewMode === "grid"
+                      ? "bg-primary text-primary-foreground"
+                      : ""
+                  }
                 >
                   <Grid3X3 className="h-4 w-4" />
                 </Button>
@@ -346,7 +357,11 @@ const Dashboard = () => {
                   variant={viewMode === "list" ? "default" : "outline"}
                   size="sm"
                   onClick={() => setViewMode("list")}
-                  className={viewMode === "list" ? "bg-primary text-primary-foreground" : ""}
+                  className={
+                    viewMode === "list"
+                      ? "bg-primary text-primary-foreground"
+                      : ""
+                  }
                 >
                   <List className="h-4 w-4" />
                 </Button>
@@ -364,11 +379,13 @@ const Dashboard = () => {
                     {searchQuery ? "검색 결과가 없습니다" : "북마크가 없습니다"}
                   </h3>
                   <p className="text-muted-foreground">
-                    {searchQuery ? "다른 키워드로 검색해보세요" : "첫 번째 북마크를 추가해보세요!"}
+                    {searchQuery
+                      ? "다른 키워드로 검색해보세요"
+                      : "첫 번째 북마크를 추가해보세요!"}
                   </p>
                 </div>
                 {!searchQuery && (
-                  <Button 
+                  <Button
                     onClick={() => setIsAddDialogOpen(true)}
                     className="bg-gradient-primary hover:opacity-90 text-white"
                   >
@@ -377,12 +394,14 @@ const Dashboard = () => {
                 )}
               </div>
             ) : (
-              <div className={
-                viewMode === "grid" 
-                  ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
-                  : "space-y-3"
-              }>
-                {filteredBookmarks.map(bookmark => (
+              <div
+                className={
+                  viewMode === "grid"
+                    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+                    : "space-y-3"
+                }
+              >
+                {filteredBookmarks.map((bookmark) => (
                   <BookmarkCard
                     key={bookmark.id}
                     id={bookmark.id}
@@ -409,11 +428,15 @@ const Dashboard = () => {
           if (!open) setEditingBookmark(null);
         }}
         onSave={handleSaveBookmark}
-        categories={categories.filter(c => c !== "전체")}
-        editingBookmark={editingBookmark ? {
-          ...editingBookmark,
-          createdAt: new Date(editingBookmark.created_at)
-        } : null}
+        categories={categories.filter((c) => c !== "전체")}
+        editingBookmark={
+          editingBookmark
+            ? {
+                ...editingBookmark,
+                createdAt: new Date(editingBookmark.created_at),
+              }
+            : null
+        }
       />
     </div>
   );

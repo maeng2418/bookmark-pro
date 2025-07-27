@@ -1,4 +1,4 @@
-import { Badge, Button, ScrollArea } from "@repo/ui";
+import { Badge, Button, ScrollArea } from "@bookmark-pro/ui";
 import { Folder, FolderOpen } from "lucide-react";
 
 interface CategoryFilterProps {
@@ -12,7 +12,7 @@ export const CategoryFilter = ({
   categories,
   selectedCategory,
   onCategorySelect,
-  bookmarkCounts
+  bookmarkCounts,
 }: CategoryFilterProps) => {
   return (
     <div className="space-y-3">
@@ -20,7 +20,7 @@ export const CategoryFilter = ({
         <Folder className="h-4 w-4 text-muted-foreground" />
         <h3 className="font-medium text-sm">카테고리</h3>
       </div>
-      
+
       <ScrollArea className="h-fit max-h-60">
         <div className="space-y-1">
           <Button
@@ -35,17 +35,22 @@ export const CategoryFilter = ({
               <span className="text-sm">전체</span>
             </div>
             <Badge variant="secondary" className="text-xs">
-              {Object.values(bookmarkCounts).reduce((sum, count) => sum + count, 0)}
+              {Object.values(bookmarkCounts).reduce(
+                (sum, count) => sum + count,
+                0
+              )}
             </Badge>
           </Button>
-          
+
           {categories.map((category) => (
             <Button
               key={category}
               variant={selectedCategory === category ? "default" : "ghost"}
               onClick={() => onCategorySelect(category)}
               className={`w-full justify-between text-left h-auto py-2 px-3 ${
-                selectedCategory === category ? "bg-bookmark-gradient text-white" : ""
+                selectedCategory === category
+                  ? "bg-bookmark-gradient text-white"
+                  : ""
               }`}
             >
               <div className="flex items-center gap-2">

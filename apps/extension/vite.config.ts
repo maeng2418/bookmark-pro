@@ -2,12 +2,23 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react-swc'
 import { resolve } from 'path'
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
+  server: {
+    fs: {
+      allow: [".."],
+    },
+  },
   resolve: {
     alias: {
       '@': resolve(__dirname, 'src'),
+      "@bookmark-pro/ui": mode === "development" 
+        ? resolve(__dirname, "../../packages/ui/src") 
+        : "@bookmark-pro/ui",
     },
+  },
+  optimizeDeps: {
+    include: ["@bookmark-pro/ui"],
   },
   build: {
     rollupOptions: {
@@ -28,4 +39,4 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   },
-})
+}))

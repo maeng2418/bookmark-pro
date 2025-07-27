@@ -179,7 +179,7 @@ export const AddBookmarkDialog = ({
                 onKeyPress={(e) => handleKeyPress(e, addTag)}
               />
               <Button onClick={addTag} size="sm" variant="outline">
-                <Plus className="h-4 w-4" />
+                <Plus className="w-4 h-4" />
               </Button>
             </div>
             {tags.length > 0 && (
@@ -191,7 +191,7 @@ export const AddBookmarkDialog = ({
                       onClick={() => removeTag(tag)}
                       className="hover:text-destructive"
                     >
-                      <X className="h-3 w-3" />
+                      <X className="w-3 h-3" />
                     </button>
                   </Badge>
                 ))}

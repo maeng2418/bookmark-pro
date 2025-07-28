@@ -15,7 +15,9 @@
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "uuid": "^9.0.0"
+    "react-router-dom": "^7.7.1",
+    "uuid": "^9.0.0",
+    "vite-plugin-svgr": "^4.3.0"
   },
   "devDependencies": {
     "@bookmark-pro/tsconfig": "workspace:*",

@@ -4,6 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  width: 375px;
+  height: 762px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
 /* Extension specific styles */
 body {
   margin: 0;

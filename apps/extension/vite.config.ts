@@ -1,6 +1,7 @@
 import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
 import { defineConfig, loadEnv } from "vite";
+import svgr from "vite-plugin-svgr";
 import webExtension, { readJsonFile } from "vite-plugin-web-extension";
 import tsconfigPaths from "vite-tsconfig-paths";
 
@@ -28,6 +29,7 @@ export default defineConfig(({ mode }) => {
         disableAutoLaunch: true,
         additionalInputs: ["src/popup.html"],
       }),
+      svgr(),
     ],
     server: {
       fs: {

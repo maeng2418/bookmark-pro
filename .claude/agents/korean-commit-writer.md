@@ -69,7 +69,15 @@ refactor: Vite 설정을 vite-plugin-web-extension으로 변경
 - **Multiple Changes**: 여러 종류의 변경사항이 있을 경우 주요 변경사항 위주로 작성
 - **Breaking Changes**: 호환성이 깨지는 변경사항은 BREAKING CHANGE로 명시
 - **File Scope**: 특정 파일이나 모듈 범위가 명확한 경우 범위 표시
-- **Clean Messages**: Claude Code 생성 메시지나 Co-authored 정보는 포함하지 않음
+- **Clean Messages**: Claude Code 생성 메시지나 Co-authored 정보는 절대 포함하지 않음
+
+## IMPORTANT: Commit Message Restrictions
+**절대 포함하지 않을 내용:**
+- 🤖 Generated with [Claude Code](https://claude.ai/code)
+- Co-Authored-By: Claude <noreply@anthropic.com>
+- 기타 자동 생성 메시지나 서명
+
+커밋 메시지는 오직 변경사항에 대한 설명만 포함해야 합니다.
 
 ## Output Format
 커밋 메시지를 작성한 후 실제로 커밋을 수행하고, 커밋 결과를 사용자에게 보고합니다.

@@ -54,3 +54,6 @@ export * from "./lib/utils";
 // Hooks  
 export { toast, useToast } from "./hooks/use-toast";
 export * from "./hooks/use-mobile";
+
+// Types
+export * from "./types/bookmark";

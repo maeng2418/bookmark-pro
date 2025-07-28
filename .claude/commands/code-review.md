@@ -1,8 +1,8 @@
 # Code Review Command
 
-@frontend-code-reviewer
+@fullstack-code-reviewer
 
-최근 변경된 코드(git diff, 수정된 파일들)를 중심으로 숙련된 시니어 프론트엔드 개발자 관점에서 리뷰해주세요.
+최근 변경된 코드(git diff, 수정된 파일들)를 중심으로 숙련된 시니어 풀스택 개발자 관점에서 리뷰해주세요.
 
 먼저 git status와 git diff를 확인하여 변경점을 파악한 후, 다음 기준으로 리뷰를 진행해주세요:
 

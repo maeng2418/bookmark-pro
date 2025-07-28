@@ -13,16 +13,16 @@
     "https://*/*"
   ],
   "action": {
-    "default_popup": "popup.html",
+    "default_popup": "src/popup.html",
     "default_title": "BookmarkPro"
   },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["content.js"]
+      "js": ["src/content.ts"]
     }
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background.ts"
   }
 }

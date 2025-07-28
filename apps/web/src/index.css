@@ -1,4 +1,4 @@
-@import "pretendard/dist/web/variable/pretendardvariable.css";
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css");
 
 @tailwind base;
 @tailwind components;
@@ -39,11 +39,15 @@ All colors MUST be HSL.
     --input: 240 6% 90%;
     --ring: 217 91% 60%;
 
-    --bookmark-gradient: linear-gradient(135deg, hsl(217 91% 60%), hsl(263 70% 70%));
+    --bookmark-gradient: linear-gradient(
+      135deg,
+      hsl(217 91% 60%),
+      hsl(263 70% 70%)
+    );
     --card-shadow: 0 4px 20px -4px hsl(217 91% 60% / 0.15);
     --card-hover-shadow: 0 8px 30px -6px hsl(217 91% 60% / 0.25);
     --glassmorphism: backdrop-blur(10px) saturate(150%);
-    
+
     --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;

@@ -1,0 +1,187 @@
+import { BookmarkType } from "@/pages/MainPage";
+import {
+  Badge,
+  Button,
+  Input,
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@bookmark-pro/ui";
+import { BookmarkIcon, PencilLine, Search, Trash2 } from "lucide-react";
+import { useState } from "react";
+
+interface BookmarkListProps {
+  bookmarks: BookmarkType[];
+  categories: string[];
+  onDelete: (bookmarkId: string) => void;
+}
+
+export default function BookmarkList({
+  bookmarks,
+  categories,
+  onDelete,
+}: BookmarkListProps) {
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredBookmarks = bookmarks.filter((bookmark) => {
+    const lowerCaseSearch = searchQuery.toLowerCase();
+    const matchesCategory =
+      selectedCategory === "all" || bookmark.category === selectedCategory;
+    const matchesSearch =
+      !searchQuery ||
+      bookmark.title?.toLowerCase().includes(lowerCaseSearch) ||
+      bookmark.url.toLowerCase().includes(lowerCaseSearch) ||
+      bookmark.tags?.some((tag) =>
+        tag.toLowerCase().includes(lowerCaseSearch)
+      ) ||
+      (bookmark.description &&
+        bookmark.description.toLowerCase().includes(lowerCaseSearch));
+
+    return matchesCategory && matchesSearch;
+  });
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
+
+  return (
+    <>
+      <div className="flex flex-col space-y-4">
+        <div className="relative flex-1">
+          <Search className="absolute w-4 h-4 text-gray-400 transform -translate-y-1/2 left-3 top-1/2" />
+          <Input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="북마크 검색..."
+            className="w-full pl-10 text-sm transition-colors border-gray-300 rounded-lg"
+          />
+        </div>
+
+        <ToggleGroup
+          type="single"
+          value={selectedCategory}
+          className="flex flex-wrap justify-start gap-2"
+        >
+          <ToggleGroupItem
+            value="all"
+            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+              selectedCategory === "all"
+                ? "bg-blue-500 text-white"
+                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+            } !rounded-button`}
+            onClick={() => setSelectedCategory("all")}
+          >
+            전체
+          </ToggleGroupItem>
+          {categories.map((category) => {
+            return (
+              <ToggleGroupItem
+                value={category}
+                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors flex items-center space-x-1 ${
+                  selectedCategory === category
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                } !rounded-button`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {/* <div
+                    className="w-2 h-2 rounded-full"
+                    style={{ backgroundColor: category.color }}
+                  ></div> */}
+                <span>{category}</span>
+              </ToggleGroupItem>
+            );
+          })}
+        </ToggleGroup>
+
+        {filteredBookmarks.length === 0 ? (
+          <div className="py-10 text-center">
+            <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full">
+              <BookmarkIcon width={24} height={24} className="text-gray-400" />
+            </div>
+            <p className="text-sm text-gray-500">
+              {searchQuery
+                ? "검색 결과가 없습니다."
+                : "저장된 북마크가 없습니다."}
+            </p>
+          </div>
+        ) : (
+          filteredBookmarks.map((bookmark) => (
+            <div
+              key={bookmark.id}
+              className="p-3 transition-shadow bg-white border border-gray-200 rounded-lg hover:shadow-md"
+            >
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center mb-1 space-x-2">
+                    {bookmark.category && (
+                      <span className="text-xs text-gray-500">
+                        {bookmark.category}
+                      </span>
+                    )}
+                    <span className="text-xs text-gray-400">
+                      {formatDate(bookmark.created_at)}
+                    </span>
+                  </div>
+                  <div className="flex items-center ml-2 space-x-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => window.open(bookmark.url, "_blank")}
+                      className="flex items-center justify-center text-gray-600 w-7 h-7 hover:bg-gray-100"
+                    >
+                      <PencilLine size={14} />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => onDelete(bookmark.id)}
+                      className="flex items-center justify-center text-red-500 w-7 h-7 hover:bg-red-50 hover:text-red-600"
+                    >
+                      <Trash2 size={14} />
+                    </Button>
+                  </div>
+                </div>
+                <h3 className="mb-1 text-sm font-medium text-gray-800 truncate">
+                  {bookmark.title || "제목 없음"}
+                </h3>
+                <a
+                  href={bookmark.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block mb-2 text-xs text-blue-600 truncate hover:text-blue-800"
+                >
+                  {bookmark.url}
+                </a>
+
+                {bookmark.description && (
+                  <p className="p-3 text-xs text-gray-600 rounded-lg bg-gray-50">
+                    {bookmark.description}
+                  </p>
+                )}
+
+                {bookmark.tags && bookmark.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-2">
+                    {bookmark.tags.map((tag) => (
+                      <Badge
+                        key={tag}
+                        className="inline-block px-2 py-1 text-xs text-blue-800 bg-blue-100 rounded-full"
+                      >
+                        #{tag}
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </>
+  );
+}

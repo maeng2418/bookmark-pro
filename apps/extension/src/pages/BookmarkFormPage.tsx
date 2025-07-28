@@ -6,7 +6,7 @@ export default function BookmarkFormPage() {
   const { loading, isAuthenticated } = useAuthGuard(true);
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   const { currentUrl = "", currentTitle = "" } = location.state || {};
 
   const handleSave = () => {
@@ -14,12 +14,12 @@ export default function BookmarkFormPage() {
   };
 
   const handleCancel = () => {
-    navigate('/');
+    navigate("/");
   };
 
   if (loading) {
     return (
-      <div className="w-96 h-60 flex items-center justify-center bg-white">
+      <div className="flex items-center justify-center bg-white w-96 h-60">
         <div className="text-gray-500">로딩중...</div>
       </div>
     );
@@ -30,8 +30,10 @@ export default function BookmarkFormPage() {
     return null;
   }
 
+  console.log(location.state || {});
+
   return (
-    <div className="w-96 bg-white">
+    <div className="bg-white w-96">
       <BookmarkForm
         currentUrl={currentUrl}
         currentTitle={currentTitle}

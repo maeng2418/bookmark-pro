@@ -1,12 +1,12 @@
-import AuthScreen from '../components/AuthScreen';
-import { useAuthGuard } from '../hooks/useAuthGuard';
+import AuthScreen from "../components/AuthScreen";
+import { useAuthGuard } from "../hooks/useAuthGuard";
 
 export default function AuthPage() {
   const { loading, isAuthenticated } = useAuthGuard(false);
 
   if (loading) {
     return (
-      <div className="w-80 h-60 flex items-center justify-center bg-white">
+      <div className="m-auto">
         <div className="text-gray-500">로딩중...</div>
       </div>
     );

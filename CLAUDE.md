@@ -90,10 +90,34 @@ pnpm --filter @bookmark-pro/web lint      # Next.js ESLint config
 
 ### State Management Patterns
 - **Web App**: React Query for server state, React hooks for local state
-- **Extension**: Chrome Storage API + React Context for auth state
-- **Data Flow**: Supabase → React Query → UI components
+- **Extension**: Supabase direct queries + React hooks for state management, Chrome Storage API + React Context for auth state
+- **Data Flow**: Supabase → React hooks/Context → UI components
 
 ## File Organization Patterns
+
+### Chrome Extension Directory Structure
+```
+src/
+├── components/         # Feature components
+│   ├── BookmarkList.tsx    # Bookmark display, search & filtering
+│   ├── UserProfile.tsx     # User avatar & profile display
+│   ├── AuthScreen.tsx      # Authentication UI
+│   └── BookmarkForm.tsx    # Bookmark creation/editing form
+├── pages/             # Page-level components
+│   ├── MainPage.tsx       # Primary extension interface
+│   ├── AuthPage.tsx       # Authentication page
+│   └── BookmarkFormPage.tsx # Bookmark form page
+├── contexts/          # React context providers
+│   └── AuthContext.tsx    # Authentication state management
+├── hooks/             # Custom React hooks
+│   └── useAuthGuard.tsx   # Authentication guard hook
+├── integrations/      # External service clients
+│   └── supabase/         # Database client & types
+├── lib/              # Utilities
+│   └── extension.ts      # Chrome extension API helpers
+└── styles/           # Global styles
+    └── globals.css       # Tailwind CSS + custom styles
+```
 
 ### Next.js App Directory Structure
 ```
@@ -116,10 +140,11 @@ src/
 ### Component Import Patterns
 ```typescript
 // UI components (from shared package)
-import { Button, Dialog } from "@bookmark-pro/ui";
+import { Button, Dialog, Badge, Input, ToggleGroup } from "@bookmark-pro/ui";
 
-// Local components
-import { BookmarkCard } from "../components/BookmarkCard";
+// Local components (Extension: use relative imports)
+import BookmarkList from "../components/BookmarkList";
+import UserProfile from "../components/UserProfile";
 
 // Supabase integration
 import { supabase } from "../integrations/supabase/client";
@@ -138,6 +163,11 @@ import { supabase } from "../integrations/supabase/client";
 - **Entry Points**: popup.html, background.ts, content.ts
 - **API Usage**: Chrome Storage, Tabs, Scripting APIs
 - **Build Process**: Vite handles bundling + manifest copying
+- **Component Architecture**: 
+  - `MainPage.tsx`: Primary bookmark management interface with real-time data fetching
+  - `BookmarkList.tsx`: Search, filtering, and bookmark display functionality
+  - `UserProfile.tsx`: User avatar and profile information display
+  - `AuthPage.tsx`: Authentication interface integration
 
 ### Environment Variables Required
 ```env
@@ -154,7 +184,9 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 ### Type System
 - Manual type declarations for UI package due to tsup dts build complexity
-- Extension uses `../` relative imports for local files (not `@/` alias)
+- **Extension Import Consistency**: Mixed usage detected - should consistently use relative imports (`../`) for local files, avoid `@/` alias
+- **Current Issue**: Some components use `@/` while others use relative imports
+- **Recommendation**: Standardize on relative imports per project guidelines
 - Strict TypeScript configuration across all packages
 
 ### Build Optimization
@@ -171,12 +203,16 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ## Common Gotchas
 
 1. **UI Package Types**: Must manually update `packages/ui/dist/index.d.ts` when adding new exports
-2. **Extension Imports**: Use relative imports (`../`) not alias imports (`@/`) for local files
-3. **Supabase RLS**: Row Level Security policies must be configured for new tables
-4. **Chrome Extension**: Must rebuild and reload extension after changes to see updates
-5. **Workspace Dependencies**: Use `workspace:*` for internal package dependencies
-6. **UI Component SSR**: Use dynamic imports with `ssr: false` for components that cause hydration issues
-7. **Development Path Mismatch**: Ensure tsconfig.json paths match webpack alias configuration for consistent module resolution
+2. **Extension Import Inconsistency**: **CRITICAL** - Mixed usage of `@/` alias and relative imports (`../`) detected. Should consistently use relative imports for local files
+3. **Extension Error Handling**: Missing user feedback for failed operations (bookmark deletion, data fetching)
+4. **Extension Performance**: Real-time search without debouncing can cause performance issues with large bookmark lists
+5. **Supabase RLS**: Row Level Security policies must be configured for new tables
+6. **Chrome Extension**: Must rebuild and reload extension after changes to see updates
+7. **Workspace Dependencies**: Use `workspace:*` for internal package dependencies
+8. **UI Component SSR**: Use dynamic imports with `ssr: false` for components that cause hydration issues
+9. **Development Path Mismatch**: Ensure tsconfig.json paths match webpack alias configuration for consistent module resolution
+10. **Extension State Management**: useEffect cleanup functions needed to prevent memory leaks in extension popup
+11. **Extension UserProfile Security**: Avoid innerHTML manipulation, use React state-based conditional rendering instead
 
 ## Troubleshooting Development Issues
 
@@ -191,3 +227,10 @@ If you encounter `Cannot read properties of undefined` errors from UI package:
 - Use port 8080 for web app: `pnpm --filter @bookmark-pro/web dev`
 - HMR works with UI package source files in development mode
 - If compilation fails, rebuild UI package and restart Next.js server
+
+### Extension Development Issues
+- **Import Path Errors**: If you encounter import resolution errors, check for mixed usage of `@/` and `../` imports
+- **Real-time Data**: Extension uses direct Supabase queries instead of React Query - ensure proper error handling
+- **Performance**: Large bookmark lists may cause rendering issues - consider implementing virtualization
+- **User Feedback**: Operations may fail silently without proper error states and user notifications
+- **Chrome API**: Extension popup has limited lifecycle - implement proper cleanup in useEffect hooks

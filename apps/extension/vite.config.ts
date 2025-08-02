@@ -57,7 +57,7 @@ export default defineConfig(({ mode }) => {
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
       "process.env.SUPABASE_URL": JSON.stringify(env.VITE_SUPABASE_URL),
       "process.env.SUPABASE_PUBLISHABLE_KEY": JSON.stringify(
-        env.VITE_SUPABASE_ANON_KEY
+        env.VITE_SUPABASE_PUBLISHABLE_KEY
       ),
     },
   };

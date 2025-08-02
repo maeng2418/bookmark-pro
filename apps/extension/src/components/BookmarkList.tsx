@@ -8,10 +8,11 @@ import {
 } from "@bookmark-pro/ui";
 import { BookmarkIcon, PencilLine, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { Category } from "../lib/categories";
 
 interface BookmarkListProps {
   bookmarks: BookmarkType[];
-  categories: string[];
+  categories: Category[];
   onDelete: (bookmarkId: string) => void;
 }
 
@@ -81,19 +82,20 @@ export default function BookmarkList({
           {categories.map((category) => {
             return (
               <ToggleGroupItem
-                value={category}
+                key={category.id}
+                value={category.name}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors flex items-center space-x-1 ${
-                  selectedCategory === category
+                  selectedCategory === category.name
                     ? "bg-blue-500 text-white"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200"
                 } !rounded-button`}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => setSelectedCategory(category.name)}
               >
-                {/* <div
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: category.color }}
-                  ></div> */}
-                <span>{category}</span>
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: category.color }}
+                ></div>
+                <span>{category.name}</span>
               </ToggleGroupItem>
             );
           })}
@@ -120,9 +122,15 @@ export default function BookmarkList({
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center mb-1 space-x-2">
                     {bookmark.category && (
-                      <span className="text-xs text-gray-500">
-                        {bookmark.category}
-                      </span>
+                      <div className="flex items-center space-x-1 text-xs text-gray-500">
+                        <span
+                          className="w-3 h-3 rounded-full"
+                          style={{ 
+                            backgroundColor: bookmark.category_color || '#6B7280' 
+                          }}
+                        />
+                        <span>{bookmark.category}</span>
+                      </div>
                     )}
                     <span className="text-xs text-gray-400">
                       {formatDate(bookmark.created_at)}

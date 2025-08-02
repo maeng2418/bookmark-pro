@@ -6,6 +6,7 @@ export interface Bookmark {
   url: string;
   description?: string;
   category: string;
+  categoryColor?: string;
   tags: string[];
   favicon?: string;
   user_id?: string;
@@ -32,8 +33,10 @@ export async function saveBookmark(
     }
 
     // Add new bookmark
+    const { categoryColor, ...bookmarkToSave } = bookmarkData;
     const { error } = await supabase.from("bookmarks").insert({
-      ...bookmarkData,
+      ...bookmarkToSave,
+      category_color: categoryColor,
       user_id: userId,
     });
 

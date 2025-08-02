@@ -1,5 +1,3 @@
-import GoogleIcon from "../assets/images/icon-google.svg?react";
-import { useAuth } from "../contexts/AuthContext";
 import {
   Button,
   Input,
@@ -9,6 +7,8 @@ import {
 } from "@bookmark-pro/ui";
 import { Bookmark, Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useState } from "react";
+import GoogleIcon from "../assets/images/icon-google.svg?react";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -59,7 +59,7 @@ export default function AuthScreen() {
   };
 
   return (
-    <div>
+    <div className="p-4">
       <div className="flex flex-col items-center space-x-2">
         <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-2xl bg-primary-500">
           <Bookmark fill="currentColor" className="text-2xl text-white" />
@@ -186,9 +186,6 @@ export default function AuthScreen() {
           <span>Google 계정으로 로그인</span>
         </Button>
       </form>
-      <p className="mt-6 text-xs text-center text-gray-500">
-        로그인하면 모든 기기에서 북마크를 동기화할 수 있습니다
-      </p>
     </div>
   );
 }

@@ -5,10 +5,9 @@
 @tailwind utilities;
 
 :root {
-  width: 375px;
-  height: 762px;
+  width: 375px; /* 800px (Chrome 확장프로그램 최대 너비) */
+  height: 600px; /* 600px (Chrome 확장프로그램 최대 높이) */
   margin: 0 auto;
-  padding: 16px 0;
 }
 
 html,

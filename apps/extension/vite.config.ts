@@ -17,7 +17,9 @@ function generateManifest() {
 }
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+  const env = loadEnv(mode, resolve(__dirname, "../.."), "");
+
+  console.log(env.SUPABASE_PUBLISHABLE_KEY);
 
   return {
     plugins: [
@@ -55,9 +57,9 @@ export default defineConfig(({ mode }) => {
     },
     define: {
       "process.env.NODE_ENV": JSON.stringify(process.env.NODE_ENV),
-      "process.env.SUPABASE_URL": JSON.stringify(env.VITE_SUPABASE_URL),
+      "process.env.SUPABASE_URL": JSON.stringify(env.SUPABASE_URL),
       "process.env.SUPABASE_PUBLISHABLE_KEY": JSON.stringify(
-        env.VITE_SUPABASE_PUBLISHABLE_KEY
+        env.SUPABASE_PUBLISHABLE_KEY
       ),
     },
   };

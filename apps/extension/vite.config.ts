@@ -29,7 +29,11 @@ export default defineConfig(({ mode }) => {
         manifest: generateManifest,
         watchFilePaths: ["package.json", "manifest.json"],
         disableAutoLaunch: true,
-        additionalInputs: ["src/popup.html"],
+        additionalInputs: [
+          "src/popup.html",
+          "src/oauth-callback.html",
+          "src/oauth-callback.js",
+        ],
       }),
       svgr(),
     ],

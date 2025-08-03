@@ -12,6 +12,13 @@
   },
   "permissions": ["activeTab", "storage", "scripting", "identity", "tabs"],
   "host_permissions": ["http://*/*", "https://*/*"],
+  "web_accessible_resources": [
+    {
+      "resources": ["src/oauth-callback.html"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxR8m2C+Ngk6dzYw1C6xJIJ/iY4nwIaPmWCH7BxCqKV8Vp4CAgVtJlOH9Ep3xUHIprJe32jvIfOxPhAvDiHgiwI6ReOHJDv0PtUxzGhAFL94VFmJ1YPe1+5Lp9p8IRxhv+0KW6XDTdtvDyNAnr+wtlUP75N6KprXye8rJXQmusj+38cxRFRSA6S/G6Db4vN93DbIpdrZDyYzs1hIP7aEnO6ntlXwPvkHmsVTm8BDUqhys9dJtIjx+vl2OEx5rvTxawmip5exukm8GHKbElKgQYW3r7slDDtmDWV9EarKgGos8ntNE5nAxfEqCkzwjawH8b7PHM0ItU82oHnIecTHLQwIDAQAB",
   "action": {
     "default_popup": "src/popup.html",
     "default_title": "BookmarkPro"

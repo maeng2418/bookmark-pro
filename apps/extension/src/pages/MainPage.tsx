@@ -2,11 +2,11 @@ import BookmarkList from "@/components/BookmarkList";
 import { Button } from "@bookmark-pro/ui";
 import { Bookmark, Globe, PencilLine, Plus, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useAuthGuard } from "../hooks/useAuthGuard";
 import { supabase } from "../integrations/supabase/client";
-import { getCurrentTab } from "../lib/extension";
 import { Category, fetchCategories } from "../lib/categories";
+import { getCurrentTab, isChromeExtension } from "../lib/extension";
 
 export interface BookmarkType {
   category: string;
@@ -25,9 +25,6 @@ export interface BookmarkType {
 export default function MainPage() {
   const { user, loading: authLoading } = useAuthGuard(true);
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const { currentUrl = "" } = location.state || {};
 
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null);
   const [bookmarks, setBookmarks] = useState<BookmarkType[]>([]);
@@ -45,7 +42,7 @@ export default function MainPage() {
           .select("*")
           .eq("user_id", user.id)
           .order("created_at", { ascending: false }),
-        fetchCategories(user.id)
+        fetchCategories(user.id),
       ]);
 
       if (bookmarksData.error) {
@@ -55,7 +52,7 @@ export default function MainPage() {
       if (bookmarksData.data) {
         setBookmarks(bookmarksData.data);
       }
-      
+
       setCategories(categoriesData);
     } catch (error) {
       console.error("Error fetching bookmarks:", error);
@@ -131,15 +128,15 @@ export default function MainPage() {
 
   if (authLoading || (loading && bookmarks.length === 0)) {
     return (
-      <div className="flex items-center justify-center bg-white w-80 h-96">
+      <div className="flex justify-center items-center w-80 h-96 bg-white">
         <div className="text-gray-500">로딩중...</div>
       </div>
     );
   }
 
   return (
-    <div className="flex-grow px-4 py-6 overflow-y-auto">
-      <div className="flex items-center justify-between mb-4">
+    <div className="overflow-y-auto flex-grow px-4 py-6">
+      <div className="flex justify-between items-center mb-4">
         <div>
           <h2 className="text-base font-semibold text-gray-900">전체 북마크</h2>
           <p className="text-sm text-gray-500">({bookmarks.length}개)</p>
@@ -155,15 +152,17 @@ export default function MainPage() {
       </div>
 
       <div className="flex flex-col space-y-4">
-        <div className="p-4 rounded-lg bg-gray-50">
+        <div className="p-4 bg-gray-50 rounded-lg">
           <div className="flex items-center mb-3 space-x-3">
-            <div className="flex items-center justify-center w-8 h-8 bg-blue-100 rounded-lg">
-              <Globe width={14} height={14} className="text-blue-600 " />
+            <div className="flex justify-center items-center w-8 h-8 bg-blue-100 rounded-lg">
+              <Globe width={14} height={14} className="text-blue-600" />
             </div>
             <div className="flex-1 min-w-0">
               <h3 className="text-sm font-medium text-gray-900">현재 페이지</h3>
               <p className="text-xs text-gray-500 truncate">
-                {currentUrl || window.location.href || "URL을 불러오는 중..."}
+                {isChromeExtension
+                  ? currentTab?.url || "URL을 불러오는 중..."
+                  : window.location.href}
               </p>
             </div>
           </div>

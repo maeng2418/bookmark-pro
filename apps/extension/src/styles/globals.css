@@ -4,17 +4,16 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  width: 375px; /* 800px (Chrome 확장프로그램 최대 너비) */
-  height: 600px; /* 600px (Chrome 확장프로그램 최대 높이) */
-  margin: 0 auto;
-}
-
 html,
-body,
-#root {
+body {
+  display: flex;
+  justify-content: center;
   width: 100%;
   height: 100%;
-  margin: 0 auto;
   padding: 0;
+}
+
+#root {
+  width: 375px; /* 800px (Chrome 확장프로그램 최대 너비) */
+  height: 600px; /* 600px (Chrome 확장프로그램 최대 높이) */
 }

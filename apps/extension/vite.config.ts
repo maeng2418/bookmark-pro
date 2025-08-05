@@ -65,6 +65,7 @@ export default defineConfig(({ mode }) => {
       "process.env.SUPABASE_PUBLISHABLE_KEY": JSON.stringify(
         env.SUPABASE_PUBLISHABLE_KEY
       ),
+      "process.env.WEB_URL": JSON.stringify(env.WEB_URL),
     },
   };
 });

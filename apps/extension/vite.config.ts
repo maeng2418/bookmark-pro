@@ -8,11 +8,13 @@ import tsconfigPaths from "vite-tsconfig-paths";
 function generateManifest() {
   const manifest = readJsonFile("manifest.json");
   const pkg = readJsonFile("package.json");
+  const key = process.env.EXTENSION_PUBLIC_KEY;
   return {
     name: pkg.name,
     description: pkg.description,
     version: pkg.version,
     ...manifest,
+    ...(key ? { key } : {}),
   };
 }
 
@@ -20,6 +22,8 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, resolve(__dirname, "../.."), "");
 
   console.log(env.SUPABASE_PUBLISHABLE_KEY);
+  // loadEnv로 읽은 값을 process.env에 병합하여 generateManifest에서도 접근 가능하게 함
+  Object.assign(process.env, env);
 
   return {
     plugins: [
@@ -66,6 +70,9 @@ export default defineConfig(({ mode }) => {
         env.SUPABASE_PUBLISHABLE_KEY
       ),
       "process.env.WEB_URL": JSON.stringify(env.WEB_URL),
+      "process.env.EXTENSION_PUBLIC_KEY": JSON.stringify(
+        env.EXTENSION_PUBLIC_KEY
+      ),
     },
   };
 });

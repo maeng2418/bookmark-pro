@@ -9,7 +9,7 @@ import {
 import { Plus, PlusIcon, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "../contexts/AuthContext";
-import { saveBookmark } from "../lib/bookmarks";
+import { saveBookmark, updateBookmark } from "../lib/bookmarks";
 import {
   Category,
   deleteCategory,
@@ -17,31 +17,46 @@ import {
   saveCategory,
 } from "../lib/categories";
 
+interface InitialBookmark {
+  id: string;
+  title: string;
+  url: string;
+  description: string | null;
+  category: string;
+  category_color: string | null;
+  tags: string[] | null;
+}
+
 interface BookmarkFormProps {
-  currentUrl: string;
-  currentTitle: string;
+  currentUrl?: string;
+  currentTitle?: string;
+  initialBookmark?: InitialBookmark;
   onSave: () => void;
   onCancel: () => void;
 }
 
 export default function BookmarkForm({
-  currentUrl,
-  currentTitle,
+  currentUrl = "",
+  currentTitle = "",
+  initialBookmark,
   onSave,
   onCancel,
 }: BookmarkFormProps) {
-  const [url, setUrl] = useState(currentUrl);
-  const [title, setTitle] = useState(currentTitle);
+  const isEdit = !!initialBookmark;
+  const [url, setUrl] = useState(initialBookmark?.url || currentUrl);
+  const [title, setTitle] = useState(initialBookmark?.title || currentTitle);
   const [tagInput, setTagInput] = useState("");
-  const [tags, setTags] = useState<string[]>([]);
-  const [memo, setMemo] = useState("");
+  const [tags, setTags] = useState<string[]>(initialBookmark?.tags || []);
+  const [memo, setMemo] = useState(initialBookmark?.description || "");
   const [showCategoryForm, setShowCategoryForm] = useState(false);
-  const [category, setCategory] = useState("일반");
+  const [category, setCategory] = useState(initialBookmark?.category || "일반");
   const [loading, setLoading] = useState(false);
   const [newCategoryColor, setNewCategoryColor] = useState("#3B82F6");
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [selectedCategoryColor, setSelectedCategoryColor] = useState("#3B82F6");
+  const [selectedCategoryColor, setSelectedCategoryColor] = useState(
+    initialBookmark?.category_color || "#3B82F6"
+  );
 
   const { user } = useAuth();
   const { toast } = useToast();
@@ -58,8 +73,11 @@ export default function BookmarkForm({
   ];
 
   useEffect(() => {
-    setTitle(currentTitle);
-  }, [currentTitle]);
+    if (!isEdit) {
+      setTitle(currentTitle);
+      setUrl(currentUrl);
+    }
+  }, [currentTitle, currentUrl, isEdit]);
 
   useEffect(() => {
     if (user) {
@@ -97,28 +115,47 @@ export default function BookmarkForm({
 
     setLoading(true);
     try {
-      const result = await saveBookmark(
-        {
+      let result: { success: boolean; error?: string };
+      if (isEdit && initialBookmark?.id) {
+        result = await updateBookmark(initialBookmark.id, {
           title: title.trim(),
-          url: currentUrl,
+          url: url.trim(),
           description: memo.trim() || undefined,
           category,
           categoryColor: selectedCategoryColor,
           tags,
-        },
-        user.id
-      );
+          userId: user.id,
+        });
+      } else {
+        result = await saveBookmark(
+          {
+            title: title.trim(),
+            url: url.trim(),
+            description: memo.trim() || undefined,
+            category,
+            categoryColor: selectedCategoryColor,
+            tags,
+          },
+          user.id
+        );
+      }
 
       if (result.success) {
         toast({
-          title: "북마크 추가됨",
-          description: "새 북마크가 성공적으로 추가되었습니다.",
+          title: isEdit ? "북마크 수정됨" : "북마크 추가됨",
+          description: isEdit
+            ? "북마크가 성공적으로 수정되었습니다."
+            : "새 북마크가 성공적으로 추가되었습니다.",
         });
         onSave();
       } else {
         toast({
           title: "오류",
-          description: result.error || "북마크 저장에 실패했습니다.",
+          description:
+            result.error ||
+            (isEdit
+              ? "북마크 수정에 실패했습니다."
+              : "북마크 저장에 실패했습니다."),
           variant: "destructive",
         });
       }
@@ -126,7 +163,9 @@ export default function BookmarkForm({
       console.error("Error saving bookmark:", error);
       toast({
         title: "오류",
-        description: "북마크 저장에 실패했습니다.",
+        description: isEdit
+          ? "북마크 수정에 실패했습니다."
+          : "북마크 저장에 실패했습니다.",
         variant: "destructive",
       });
     } finally {
@@ -206,7 +245,9 @@ export default function BookmarkForm({
   return (
     <div className="p-4 space-y-4">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-semibold text-gray-900">북마크 저장</h2>
+        <h2 className="text-base font-semibold text-gray-900">
+          {isEdit ? "북마크 수정" : "북마크 저장"}
+        </h2>
         <Button
           onClick={onCancel}
           className="flex items-center justify-center w-6 h-6 transition-colors rounded hover:bg-gray-100"

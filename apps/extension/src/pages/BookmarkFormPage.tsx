@@ -7,10 +7,29 @@ export default function BookmarkFormPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { currentUrl = "", currentTitle = "" } = location.state || {};
+  type EditBookmark = {
+    id: string;
+    title: string;
+    url: string;
+    description: string | null;
+    category: string;
+    category_color: string | null;
+    tags: string[] | null;
+  };
+  const state =
+    (location.state as {
+      currentUrl?: string;
+      currentTitle?: string;
+      editBookmark?: EditBookmark;
+    }) || {};
+  const { currentUrl = "", currentTitle = "", editBookmark } = state;
 
   const handleSave = () => {
-    window.close();
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate("/");
+    }
   };
 
   const handleCancel = () => {
@@ -37,6 +56,7 @@ export default function BookmarkFormPage() {
       <BookmarkForm
         currentUrl={currentUrl}
         currentTitle={currentTitle}
+        initialBookmark={editBookmark}
         onSave={handleSave}
         onCancel={handleCancel}
       />

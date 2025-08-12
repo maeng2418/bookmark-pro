@@ -36,10 +36,10 @@ const Layout = () => {
 
   return (
     <div className="flex flex-col bg-white">
-      <div className="z-10 px-4 py-3 bg-white border-b border-gray-200 ">
-        <div className="flex items-center justify-between">
+      <div className="z-10 px-4 py-3 bg-white border-b border-gray-200">
+        <div className="flex justify-between items-center">
           <div className="flex items-center space-x-2">
-            <div className="flex items-center justify-center w-8 h-8 bg-blue-500 rounded-lg">
+            <div className="flex justify-center items-center w-8 h-8 bg-blue-500 rounded-lg">
               <Bookmark fill="currentColor" className="w-4 h-4 text-white" />
             </div>
             <h1 className="text-lg font-semibold text-gray-900">BookmarkPro</h1>
@@ -52,7 +52,7 @@ const Layout = () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                className="flex flex-col w-48 gap-2 bg-white"
+                className="flex flex-col gap-2 w-48 bg-white"
                 align="end"
               >
                 <Button

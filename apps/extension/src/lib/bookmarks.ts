@@ -61,7 +61,32 @@ export async function fetchBookmarks(userId: string): Promise<Bookmark[]> {
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    const normalized: Bookmark[] = (data || []).map(
+      (row: {
+        id: string;
+        title: string;
+        url: string;
+        description: string | null;
+        category: string;
+        category_color: string | null;
+        tags: string[] | null;
+        favicon: string | null;
+        user_id: string;
+        created_at: string;
+      }) => ({
+        id: row.id,
+        title: row.title,
+        url: row.url,
+        description: row.description ?? undefined,
+        category: row.category,
+        categoryColor: row.category_color ?? undefined,
+        tags: row.tags ?? [],
+        favicon: row.favicon ?? undefined,
+        user_id: row.user_id,
+        created_at: row.created_at,
+      })
+    );
+    return normalized;
   } catch (error) {
     console.error("Error fetching bookmarks:", error);
     return [];
@@ -86,5 +111,52 @@ export async function deleteBookmark(
       success: false,
       error: "북마크 삭제에 실패했습니다.",
     };
+  }
+}
+
+export async function updateBookmark(
+  bookmarkId: string,
+  updates: {
+    title: string;
+    url: string;
+    description?: string;
+    category: string;
+    categoryColor?: string;
+    tags: string[];
+    userId: string;
+  }
+): Promise<{ success: boolean; error?: string }> {
+  try {
+    // Check for duplicate URL except current bookmark
+    const { data: existing } = await supabase
+      .from("bookmarks")
+      .select("id")
+      .eq("user_id", updates.userId)
+      .eq("url", updates.url)
+      .neq("id", bookmarkId);
+
+    if (existing && existing.length > 0) {
+      return { success: false, error: "이미 저장된 URL입니다." };
+    }
+
+    const { error } = await supabase
+      .from("bookmarks")
+      .update({
+        title: updates.title,
+        url: updates.url,
+        description: updates.description ?? null,
+        category: updates.category,
+        category_color: updates.categoryColor,
+        tags: updates.tags,
+      })
+      .eq("id", bookmarkId)
+      .eq("user_id", updates.userId);
+
+    if (error) throw error;
+
+    return { success: true };
+  } catch (error) {
+    console.error("Error updating bookmark:", error);
+    return { success: false, error: "북마크 수정에 실패했습니다." };
   }
 }

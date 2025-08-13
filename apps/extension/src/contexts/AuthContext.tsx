@@ -15,31 +15,40 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     // 초기 세션 확인
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      if (isMounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
     });
 
     // 인증 상태 변경 리스너
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      if (isMounted) {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
+      }
     });
 
     // Chrome extension에서 background script의 인증 상태 변경 메시지 수신
+    let messageHandlerAdded = false;
     if (isChromeExtension) {
       const handleMessage = (message: any) => {
+        if (!isMounted) return;
+        
         if (message.type === "AUTH_STATE_CHANGED") {
           console.log("Auth state changed message received:", message);
           // background script에서 세션 정보를 받아 Supabase에 설정
@@ -53,14 +62,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       };
 
       chrome.runtime.onMessage.addListener(handleMessage);
+      messageHandlerAdded = true;
 
       return () => {
+        isMounted = false;
         subscription.unsubscribe();
-        chrome.runtime.onMessage.removeListener(handleMessage);
+        if (messageHandlerAdded) {
+          chrome.runtime.onMessage.removeListener(handleMessage);
+        }
       };
     }
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const signIn = async (email: string, password: string) => {
@@ -223,12 +239,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
-}
+};
 
-export function useAuth() {
+export { AuthProvider };
+
+export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
-}
+};

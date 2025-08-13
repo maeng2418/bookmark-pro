@@ -9,13 +9,16 @@ export interface ToastProps {
   onClose: () => void;
 }
 
-export default function Toast({ type, message, duration = 3000, onClose }: ToastProps) {
+const Toast = ({ type, message, duration = 3000, onClose }: ToastProps) => {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsVisible(false);
-      setTimeout(onClose, 300); // Wait for animation to complete
+      const animationTimer = setTimeout(onClose, 300); // Wait for animation to complete
+      
+      // Return cleanup for both timers
+      return () => clearTimeout(animationTimer);
     }, duration);
 
     return () => clearTimeout(timer);
@@ -85,4 +88,6 @@ export default function Toast({ type, message, duration = 3000, onClose }: Toast
       </div>
     </div>
   );
-}
+};
+
+export default Toast;

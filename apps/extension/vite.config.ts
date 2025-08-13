@@ -14,7 +14,7 @@ function generateManifest() {
     description: pkg.description,
     version: pkg.version,
     ...manifest,
-    ...(key ? { key } : {}),
+    ...(key && process.env.NODE_ENV === "development" ? { key } : {}),
   };
 }
 

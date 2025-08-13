@@ -1,92 +1,22 @@
 import BookmarkList from "@/components/BookmarkList";
+import LoadingSpinner from "@/components/LoadingSpinner";
 import { Button } from "@bookmark-pro/ui";
 import { Bookmark, Globe, PencilLine, Plus, Trash2 } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthGuard } from "../hooks/useAuthGuard";
-import { supabase } from "../integrations/supabase/client";
-import { Category, fetchCategories } from "../lib/categories";
-import { getCurrentTab, isChromeExtension } from "../lib/extension";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useBookmarks } from "@/hooks/useBookmarks";
+import { useCurrentTab } from "@/hooks/useCurrentTab";
+import { useToast } from "@/contexts/ToastContext";
+import { isChromeExtension } from "@/lib/extension";
 
-export interface BookmarkType {
-  category: string;
-  category_color: string | null;
-  created_at: string;
-  description: string | null;
-  favicon: string | null;
-  id: string;
-  tags: string[] | null;
-  title: string;
-  updated_at: string;
-  url: string;
-  user_id: string;
-}
 
-export default function MainPage() {
+const MainPage = () => {
   const { user, loading: authLoading } = useAuthGuard(true);
   const navigate = useNavigate();
+  const { showSuccess, showError } = useToast();
 
-  const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null);
-  const [bookmarks, setBookmarks] = useState<BookmarkType[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isUrlSaved, setIsUrlSaved] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  const fetchData = useCallback(async () => {
-    if (!user) return;
-    setLoading(true);
-    try {
-      const [bookmarksData, categoriesData] = await Promise.all([
-        supabase
-          .from("bookmarks")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false }),
-        fetchCategories(user.id),
-      ]);
-
-      if (bookmarksData.error) {
-        throw bookmarksData.error;
-      }
-
-      if (bookmarksData.data) {
-        setBookmarks(bookmarksData.data);
-      }
-
-      setCategories(categoriesData);
-    } catch (error) {
-      console.error("Error fetching bookmarks:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
-
-  useEffect(() => {
-    const loadInitialData = async () => {
-      try {
-        const tab = await getCurrentTab();
-        setCurrentTab(tab);
-      } catch (error) {
-        console.error("Failed to get current tab:", error);
-      }
-    };
-
-    loadInitialData();
-    if (user) {
-      fetchData();
-    }
-  }, [user, fetchData]);
-
-  useEffect(() => {
-    if (currentTab?.url && bookmarks.length > 0) {
-      const isSaved = bookmarks.some(
-        (bookmark) => bookmark.url === currentTab.url
-      );
-      setIsUrlSaved(isSaved);
-    } else {
-      setIsUrlSaved(false);
-    }
-  }, [currentTab, bookmarks]);
+  const { bookmarks, categories, loading, error, deleteBookmark } = useBookmarks(user);
+  const { currentTab, isCurrentUrlSaved, currentBookmark } = useCurrentTab(bookmarks);
 
   const handleAddBookmark = () => {
     if (currentTab) {
@@ -99,37 +29,16 @@ export default function MainPage() {
     }
   };
 
-  const handleDeleteBookmark = async (id: string) => {
-    if (!user) return;
-
-    try {
-      const { error } = await supabase
-        .from("bookmarks")
-        .delete()
-        .match({ id, user_id: user.id });
-
-      if (error) {
-        throw error;
-      }
-
-      setBookmarks(bookmarks.filter((b) => b.id !== id));
-    } catch (error) {
-      console.error("Error deleting bookmark:", error);
-    }
-  };
-
   const handleDeleteCurrentBookmark = async () => {
-    if (!currentTab?.url) return;
-    const bookmarkToDelete = bookmarks.find((b) => b.url === currentTab.url);
-    if (bookmarkToDelete) {
-      await handleDeleteBookmark(bookmarkToDelete.id);
+    if (currentBookmark) {
+      await deleteBookmark(currentBookmark.id);
     }
   };
 
   if (authLoading || (loading && bookmarks.length === 0)) {
     return (
       <div className="flex justify-center items-center w-80 h-96 bg-white">
-        <div className="text-gray-500">로딩중...</div>
+        <LoadingSpinner text="로딩 중..." />
       </div>
     );
   }
@@ -167,7 +76,7 @@ export default function MainPage() {
             </div>
           </div>
           <div className="flex space-x-2">
-            {isUrlSaved ? (
+            {isCurrentUrlSaved ? (
               <>
                 <Button
                   onClick={handleDeleteCurrentBookmark}
@@ -203,9 +112,11 @@ export default function MainPage() {
         <BookmarkList
           bookmarks={bookmarks}
           categories={categories}
-          onDelete={handleDeleteBookmark}
+          onDelete={deleteBookmark}
         />
       </div>
     </div>
   );
-}
+};
+
+export default MainPage;

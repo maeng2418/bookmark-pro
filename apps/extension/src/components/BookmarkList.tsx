@@ -1,4 +1,4 @@
-import { BookmarkType } from "@/pages/MainPage";
+import { BookmarkType } from "@/types";
 import {
   Badge,
   Button,
@@ -9,29 +9,33 @@ import {
 import { BookmarkIcon, PencilLine, Search, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Category } from "../lib/categories";
+import { Category } from "@/lib/categories";
+import { useDebounce } from "@/hooks/useDebounce";
 
 interface BookmarkListProps {
   bookmarks: BookmarkType[];
   categories: Category[];
-  onDelete: (bookmarkId: string) => void;
+  onDelete: (bookmarkId: string) => Promise<boolean>;
+  loading?: boolean;
 }
 
-export default function BookmarkList({
+const BookmarkList = ({
   bookmarks,
   categories,
   onDelete,
-}: BookmarkListProps) {
+  loading = false,
+}: BookmarkListProps) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSearchQuery = useDebounce(searchQuery, 300);
   const navigate = useNavigate();
 
   const filteredBookmarks = bookmarks.filter((bookmark) => {
-    const lowerCaseSearch = searchQuery.toLowerCase();
+    const lowerCaseSearch = debouncedSearchQuery.toLowerCase();
     const matchesCategory =
       selectedCategory === "all" || bookmark.category === selectedCategory;
     const matchesSearch =
-      !searchQuery ||
+      !debouncedSearchQuery ||
       bookmark.title?.toLowerCase().includes(lowerCaseSearch) ||
       bookmark.url.toLowerCase().includes(lowerCaseSearch) ||
       bookmark.tags?.some((tag) =>
@@ -109,7 +113,7 @@ export default function BookmarkList({
               <BookmarkIcon width={24} height={24} className="text-gray-400" />
             </div>
             <p className="text-sm text-gray-500">
-              {searchQuery
+              {debouncedSearchQuery
                 ? "검색 결과가 없습니다."
                 : "저장된 북마크가 없습니다."}
             </p>
@@ -155,8 +159,11 @@ export default function BookmarkList({
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => onDelete(bookmark.id)}
-                      className="flex justify-center items-center w-7 h-7 text-red-500 hover:bg-red-50 hover:text-red-600"
+                      onClick={async () => {
+                        await onDelete(bookmark.id);
+                      }}
+                      disabled={loading}
+                      className="flex justify-center items-center w-7 h-7 text-red-500 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
                     >
                       <Trash2 size={14} />
                     </Button>
@@ -199,4 +206,6 @@ export default function BookmarkList({
       </div>
     </>
   );
-}
+};
+
+export default BookmarkList;

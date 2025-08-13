@@ -1,22 +1,10 @@
 import { supabase } from "@/integrations/supabase/client";
-
-export interface Bookmark {
-  id?: string;
-  title: string;
-  url: string;
-  description?: string;
-  category: string;
-  categoryColor?: string;
-  tags: string[];
-  favicon?: string;
-  user_id?: string;
-  created_at?: string;
-}
+import type { BookmarkType, BookmarkCreateData, BookmarkUpdateData, BookmarkApiResponse } from "@/types";
 
 export async function saveBookmark(
-  bookmarkData: Omit<Bookmark, "id" | "created_at" | "user_id">,
+  bookmarkData: BookmarkCreateData,
   userId: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<BookmarkApiResponse> {
   try {
     // Check for duplicate URL
     const { data: existingBookmarks } = await supabase
@@ -52,7 +40,7 @@ export async function saveBookmark(
   }
 }
 
-export async function fetchBookmarks(userId: string): Promise<Bookmark[]> {
+export async function fetchBookmarks(userId: string): Promise<BookmarkType[]> {
   try {
     const { data, error } = await supabase
       .from("bookmarks")
@@ -61,7 +49,7 @@ export async function fetchBookmarks(userId: string): Promise<Bookmark[]> {
       .order("created_at", { ascending: false });
 
     if (error) throw error;
-    const normalized: Bookmark[] = (data || []).map(
+    const normalized: BookmarkType[] = (data || []).map(
       (row: {
         id: string;
         title: string;
@@ -95,7 +83,7 @@ export async function fetchBookmarks(userId: string): Promise<Bookmark[]> {
 
 export async function deleteBookmark(
   bookmarkId: string
-): Promise<{ success: boolean; error?: string }> {
+): Promise<BookmarkApiResponse> {
   try {
     const { error } = await supabase
       .from("bookmarks")
@@ -116,16 +104,8 @@ export async function deleteBookmark(
 
 export async function updateBookmark(
   bookmarkId: string,
-  updates: {
-    title: string;
-    url: string;
-    description?: string;
-    category: string;
-    categoryColor?: string;
-    tags: string[];
-    userId: string;
-  }
-): Promise<{ success: boolean; error?: string }> {
+  updates: BookmarkUpdateData
+): Promise<BookmarkApiResponse> {
   try {
     // Check for duplicate URL except current bookmark
     const { data: existing } = await supabase

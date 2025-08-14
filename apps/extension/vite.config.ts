@@ -21,7 +21,6 @@ function generateManifest() {
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, resolve(__dirname, "../.."), "");
 
-  console.log(env.SUPABASE_PUBLISHABLE_KEY);
   // loadEnv로 읽은 값을 process.env에 병합하여 generateManifest에서도 접근 가능하게 함
   Object.assign(process.env, env);
 

@@ -1,9 +1,9 @@
+import { supabase } from "@/supabase/client";
+import { isChromeExtension } from "@/utils/extension";
 import { AuthError, Session, User } from "@supabase/supabase-js";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { supabase } from "../integrations/supabase/client";
-import { isChromeExtension } from "../lib/extension";
 
-interface AuthContextType {
+type AuthContextType = {
   user: User | null;
   session: Session | null;
   loading: boolean;
@@ -11,7 +11,7 @@ interface AuthContextType {
   signUp: (email: string, password: string) => Promise<{ error?: AuthError }>;
   signInWithGoogle: () => Promise<{ error?: AuthError }>;
   signOut: () => Promise<void>;
-}
+};
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -35,7 +35,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // 인증 상태 변경 리스너
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (isMounted) {
         setSession(session);
         setUser(session?.user ?? null);
@@ -48,7 +48,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     if (isChromeExtension) {
       const handleMessage = (message: any) => {
         if (!isMounted) return;
-        
+
         if (message.type === "AUTH_STATE_CHANGED") {
           console.log("Auth state changed message received:", message);
           // background script에서 세션 정보를 받아 Supabase에 설정

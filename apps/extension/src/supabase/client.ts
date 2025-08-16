@@ -1,5 +1,5 @@
+import { runWithBrowser } from "@/utils/extension";
 import { createClient } from "@supabase/supabase-js";
-import { runWithBrowser } from "../../lib/extension";
 import type { Database } from "./types";
 
 const SUPABASE_URL = process.env.SUPABASE_URL!;

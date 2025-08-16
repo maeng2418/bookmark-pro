@@ -3,9 +3,11 @@ import type { Bookmark, CreateBookmarkData } from "@bookmark-pro/ui";
 
 export const isChromeExtension = (() => {
   try {
-    return typeof chrome !== "undefined" && 
-           typeof chrome.runtime !== "undefined" && 
-           chrome.runtime.id !== undefined;
+    return (
+      typeof chrome !== "undefined" &&
+      typeof chrome.runtime !== "undefined" &&
+      chrome.runtime.id !== undefined
+    );
   } catch {
     return false;
   }
@@ -18,7 +20,9 @@ export const runWithBrowser = async <T>(
   try {
     if (!isChromeExtension) {
       if (!browserCallback) {
-        throw new Error("Browser callback is required in non-extension environment");
+        throw new Error(
+          "Browser callback is required in non-extension environment"
+        );
       }
       return browserCallback();
     }

@@ -1,10 +1,10 @@
 import { Button } from "@bookmark-pro/ui";
 import { Plus } from "lucide-react";
 
-interface PageHeaderProps {
+type PageHeaderProps = {
   bookmarkCount: number;
   onAddBookmark: () => void;
-}
+};
 
 const PageHeader = ({ bookmarkCount, onAddBookmark }: PageHeaderProps) => {
   return (

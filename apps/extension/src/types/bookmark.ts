@@ -1,10 +1,11 @@
+import type { Category } from "../supabase/categories";
+
 export interface BookmarkType {
   id: string;
   title: string;
   url: string;
   description?: string | null;
-  category: string;
-  category_color?: string | null;
+  category: Category;
   tags?: string[] | null;
   favicon?: string | null;
   user_id: string;
@@ -16,8 +17,7 @@ export interface BookmarkCreateData {
   title: string;
   url: string;
   description?: string;
-  category: string;
-  categoryColor?: string;
+  category: Category;
   tags: string[];
   favicon?: string;
 }

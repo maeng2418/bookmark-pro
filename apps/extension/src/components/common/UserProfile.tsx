@@ -1,11 +1,11 @@
 import { User } from "@supabase/supabase-js";
 
-interface UserProfileProps {
+type UserProfileProps = {
   user: User;
   size?: "sm" | "md" | "lg";
-}
+};
 
-export default function UserProfile({ user, size = "md" }: UserProfileProps) {
+const UserProfile = ({ user, size = "md" }: UserProfileProps) => {
   const sizeClasses = {
     sm: "w-6 h-6 text-xs",
     md: "w-8 h-8 text-sm",
@@ -22,7 +22,7 @@ export default function UserProfile({ user, size = "md" }: UserProfileProps) {
   if (isGoogleUser && profileImageUrl) {
     return (
       <div
-        className={`${sizeClasses[size]} rounded-full overflow-hidden bg-gray-200 flex-shrink-0`}
+        className={`overflow-hidden flex-shrink-0 bg-gray-200 rounded-full ${sizeClasses[size]}`}
       >
         <img
           src={profileImageUrl}
@@ -35,7 +35,7 @@ export default function UserProfile({ user, size = "md" }: UserProfileProps) {
             const parent = target.parentElement;
             if (parent) {
               parent.innerHTML = `
-                <div class="w-full h-full bg-primary-500 text-white flex items-center justify-center font-medium">
+                <div class="flex justify-center items-center w-full h-full font-medium text-white bg-primary-500">
                   ${getInitial(user.email || "")}
                 </div>
               `;
@@ -48,9 +48,11 @@ export default function UserProfile({ user, size = "md" }: UserProfileProps) {
 
   return (
     <div
-      className={`${sizeClasses[size]} rounded-full bg-primary-500 text-white flex items-center justify-center font-medium flex-shrink-0`}
+      className={`flex flex-shrink-0 justify-center items-center font-medium text-white rounded-full ${sizeClasses[size]} bg-primary-500`}
     >
       {getInitial(user.email || "")}
     </div>
   );
-}
+};
+
+export default UserProfile;

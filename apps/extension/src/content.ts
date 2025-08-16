@@ -47,7 +47,7 @@ function openBookmarkDialog() {
 }
 
 // 우클릭 컨텍스트 메뉴 처리를 위한 페이지 정보 저장
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (request.action === 'getPageInfo') {
     sendResponse(pageInfo)
   }

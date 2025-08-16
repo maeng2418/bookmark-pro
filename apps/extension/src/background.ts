@@ -16,7 +16,7 @@ chrome.action.onClicked.addListener((tab) => {
 });
 
 // Handle messages from content scripts or popup
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   console.log("Message received:", request);
 
   switch (request.action || request.type) {

@@ -1,7 +1,7 @@
-import AuthScreen from "../components/AuthScreen";
-import { useAuthGuard } from "../hooks/useAuthGuard";
+import AuthForm from "@/components/auth/AuthForm";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
 
-export default function AuthPage() {
+const AuthPage = () => {
   const { loading, isAuthenticated } = useAuthGuard(false);
 
   if (loading) {
@@ -17,5 +17,7 @@ export default function AuthPage() {
     return null;
   }
 
-  return <AuthScreen />;
-}
+  return <AuthForm />;
+};
+
+export default AuthPage;

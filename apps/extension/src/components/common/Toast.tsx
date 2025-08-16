@@ -60,16 +60,16 @@ const Toast = ({ type, message, duration = 3000, onClose }: ToastProps) => {
   return (
     <div
       className={`
-        fixed top-4 right-4 z-50 max-w-sm w-full
+        w-full
         transform transition-all duration-300 ease-in-out
-        ${isVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}
+        ${isVisible ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}
       `}
     >
-      <div className={`p-4 rounded-lg border shadow-lg ${getBgColor()}`}>
+      <div className={`p-3 rounded-lg border shadow-lg ${getBgColor()}`}>
         <div className="flex items-start space-x-3">
           {getIcon()}
           <div className="flex-1 min-w-0">
-            <p className={`text-sm font-medium ${getTextColor()}`}>
+            <p className={`text-sm font-medium leading-relaxed break-words ${getTextColor()}`}>
               {message}
             </p>
           </div>
@@ -80,7 +80,7 @@ const Toast = ({ type, message, duration = 3000, onClose }: ToastProps) => {
               setIsVisible(false);
               setTimeout(onClose, 300);
             }}
-            className={`h-6 w-6 ${getTextColor()} hover:bg-white/20`}
+            className={`w-6 h-6 flex-shrink-0 ${getTextColor()} hover:bg-white/20`}
           >
             <X className="w-4 h-4" />
           </Button>

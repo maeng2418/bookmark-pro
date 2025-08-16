@@ -1,21 +1,22 @@
+import BookmarkForm from "@/components/bookmark/BookmarkForm";
+import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { Category } from "@/supabase/categories";
 import { useLocation, useNavigate } from "react-router-dom";
-import BookmarkForm from "../components/BookmarkForm";
-import { useAuthGuard } from "../hooks/useAuthGuard";
 
-export default function BookmarkFormPage() {
+type EditBookmark = {
+  id: string;
+  title: string;
+  url: string;
+  description: string | null;
+  category: Category;
+  tags: string[] | null;
+};
+
+const BookmarkFormPage = () => {
   const { loading, isAuthenticated } = useAuthGuard(true);
   const location = useLocation();
   const navigate = useNavigate();
 
-  type EditBookmark = {
-    id: string;
-    title: string;
-    url: string;
-    description: string | null;
-    category: string;
-    category_color: string | null;
-    tags: string[] | null;
-  };
   const state =
     (location.state as {
       currentUrl?: string;
@@ -38,7 +39,7 @@ export default function BookmarkFormPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center bg-white w-96 h-60">
+      <div className="flex justify-center items-center w-96 h-60 bg-white">
         <div className="text-gray-500">로딩중...</div>
       </div>
     );
@@ -49,10 +50,8 @@ export default function BookmarkFormPage() {
     return null;
   }
 
-  console.log(location.state || {});
-
   return (
-    <div className="bg-white w-96">
+    <div>
       <BookmarkForm
         currentUrl={currentUrl}
         currentTitle={currentTitle}
@@ -62,4 +61,6 @@ export default function BookmarkFormPage() {
       />
     </div>
   );
-}
+};
+
+export default BookmarkFormPage;

@@ -108,10 +108,10 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-background via-background to-secondary/20">
+    <div className="flex justify-center items-center p-4 min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gradient-primary rounded-2xl">
+          <div className="inline-flex justify-center items-center mb-4 w-16 h-16 rounded-2xl bg-gradient-primary">
             <Bookmark className="w-8 h-8 text-white" />
           </div>
           <h1 className="mb-2 text-3xl font-bold text-foreground">
@@ -141,10 +141,10 @@ const Auth = () => {
             <Button
               onClick={handleGoogleSignIn}
               disabled={loading}
-              className="w-full mb-6 text-gray-900 bg-white border border-gray-300 hover:bg-gray-50"
+              className="mb-6 w-full text-gray-900 bg-white border border-gray-300 hover:bg-gray-50"
               variant="outline"
             >
-              <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+              <svg className="mr-2 w-5 h-5" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -166,16 +166,16 @@ const Auth = () => {
             </Button>
 
             <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
+              <div className="flex absolute inset-0 items-center">
                 <span className="w-full border-t border-border" />
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
+              <div className="flex relative justify-center text-xs uppercase">
                 <span className="px-2 bg-card text-muted-foreground">또는</span>
               </div>
             </div>
 
             <Tabs defaultValue="signin" className="w-full">
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid grid-cols-2 w-full">
                 <TabsTrigger value="signin">로그인</TabsTrigger>
                 <TabsTrigger value="signup">회원가입</TabsTrigger>
               </TabsList>
@@ -185,7 +185,7 @@ const Auth = () => {
                   <div className="space-y-2">
                     <Label htmlFor="signin-email">이메일</Label>
                     <div className="relative">
-                      <Mail className="absolute w-4 h-4 left-3 top-3 text-muted-foreground" />
+                      <Mail className="absolute top-3 left-3 w-4 h-4 text-muted-foreground" />
                       <Input
                         id="signin-email"
                         type="email"
@@ -213,7 +213,7 @@ const Auth = () => {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                        className="absolute top-0 right-0 px-3 py-2 h-full hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -235,7 +235,7 @@ const Auth = () => {
                   <div className="space-y-2">
                     <Label htmlFor="signup-email">이메일</Label>
                     <div className="relative">
-                      <Mail className="absolute w-4 h-4 left-3 top-3 text-muted-foreground" />
+                      <Mail className="absolute top-3 left-3 w-4 h-4 text-muted-foreground" />
                       <Input
                         id="signup-email"
                         type="email"
@@ -264,7 +264,7 @@ const Auth = () => {
                         type="button"
                         variant="ghost"
                         size="sm"
-                        className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
+                        className="absolute top-0 right-0 px-3 py-2 h-full hover:bg-transparent"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (

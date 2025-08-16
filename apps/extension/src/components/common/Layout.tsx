@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { runWithBrowser } from "@/lib/extension";
+import { runWithBrowser } from "@/utils/extension";
 import {
   Button,
   Popover,
@@ -52,7 +52,7 @@ const Layout = () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent
-                className="flex flex-col gap-2 w-48 bg-white"
+                className="flex flex-col gap-2 p-2 w-48 bg-white"
                 align="end"
               >
                 <Button

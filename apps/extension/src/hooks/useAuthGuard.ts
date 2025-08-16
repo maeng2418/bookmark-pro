@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const useAuthGuard = (requireAuth = true) => {
   const { user, loading } = useAuth();
@@ -10,9 +10,9 @@ export const useAuthGuard = (requireAuth = true) => {
     if (loading) return;
 
     if (requireAuth && !user) {
-      navigate('/auth', { replace: true });
+      navigate("/auth", { replace: true });
     } else if (!requireAuth && user) {
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
     }
   }, [user, loading, requireAuth]);
 

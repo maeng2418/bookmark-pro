@@ -1,5 +1,5 @@
 import { RouteObject } from "react-router-dom";
-import Layout from "./components/Layout";
+import Layout from "./components/common/Layout";
 import AuthPage from "./pages/AuthPage";
 import BookmarkFormPage from "./pages/BookmarkFormPage";
 import ErrorPage from "./pages/ErrorPage";

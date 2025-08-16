@@ -16,8 +16,7 @@ export type Database = {
     Tables: {
       bookmarks: {
         Row: {
-          category: string
-          category_color: string | null
+          category_id: string | null
           created_at: string
           description: string | null
           favicon: string | null
@@ -29,8 +28,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          category?: string
-          category_color?: string | null
+          category_id?: string | null
           created_at?: string
           description?: string | null
           favicon?: string | null
@@ -42,8 +40,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          category?: string
-          category_color?: string | null
+          category_id?: string | null
           created_at?: string
           description?: string | null
           favicon?: string | null
@@ -54,7 +51,15 @@ export type Database = {
           url?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          }
+        ]
       }
       categories: {
         Row: {

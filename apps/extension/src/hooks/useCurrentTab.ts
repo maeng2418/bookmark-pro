@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
-import { getCurrentTab } from "@/lib/extension";
 import type { BookmarkType } from "@/types";
+import { getCurrentTab } from "@/utils/extension";
+import { useEffect, useState } from "react";
 
-interface UseCurrentTabReturn {
+type UseCurrentTabReturn = {
   currentTab: chrome.tabs.Tab | null;
   isCurrentUrlSaved: boolean;
   currentBookmark: BookmarkType | undefined;
   loading: boolean;
-}
+};
 
-export function useCurrentTab(bookmarks: BookmarkType[]): UseCurrentTabReturn {
+export const useCurrentTab = (
+  bookmarks: BookmarkType[]
+): UseCurrentTabReturn => {
   const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,8 +30,8 @@ export function useCurrentTab(bookmarks: BookmarkType[]): UseCurrentTabReturn {
     loadCurrentTab();
   }, []);
 
-  const currentBookmark = currentTab?.url 
-    ? bookmarks.find(bookmark => bookmark.url === currentTab.url)
+  const currentBookmark = currentTab?.url
+    ? bookmarks.find((bookmark) => bookmark.url === currentTab.url)
     : undefined;
 
   const isCurrentUrlSaved = !!currentBookmark;
@@ -40,4 +42,4 @@ export function useCurrentTab(bookmarks: BookmarkType[]): UseCurrentTabReturn {
     currentBookmark,
     loading,
   };
-}
+};

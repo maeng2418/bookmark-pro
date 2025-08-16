@@ -12,13 +12,16 @@
   },
   "dependencies": {
     "@bookmark-pro/ui": "workspace:*",
+    "@hookform/resolvers": "^3.9.0",
     "@supabase/supabase-js": "^2.52.1",
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.53.0",
     "react-router-dom": "^7.7.1",
     "uuid": "^9.0.0",
-    "vite-plugin-svgr": "^4.3.0"
+    "vite-plugin-svgr": "^4.3.0",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@bookmark-pro/tsconfig": "workspace:*",

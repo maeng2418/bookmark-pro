@@ -1,7 +1,7 @@
-import BookmarkList from "@/components/BookmarkList";
-import LoadingSpinner from "@/components/LoadingSpinner";
-import PageHeader from "@/components/PageHeader";
-import CurrentPageCard from "@/components/CurrentPageCard";
+import BookmarkList from "@/components/main/BookmarkList";
+import LoadingSpinner from "@/components/common/LoadingSpinner";
+import PageHeader from "@/components/common/PageHeader";
+import CurrentPageCard from "@/components/main/CurrentPageCard";
 import { useNavigate } from "react-router-dom";
 import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { useBookmarks } from "@/hooks/useBookmarks";
@@ -11,7 +11,14 @@ import { useCurrentTab } from "@/hooks/useCurrentTab";
 const MainPage = () => {
   const { user, loading: authLoading } = useAuthGuard(true);
   const navigate = useNavigate();
-  const { bookmarks, categories, loading, deleteBookmark } = useBookmarks(user);
+  const { 
+    bookmarks, 
+    categories, 
+    loading, 
+    deleteBookmark, 
+    searchBookmarks, 
+    searchBookmarksByTags 
+  } = useBookmarks(user);
   const { currentTab, isCurrentUrlSaved, currentBookmark } = useCurrentTab(bookmarks);
 
   const handleAddBookmark = () => {
@@ -59,6 +66,8 @@ const MainPage = () => {
           categories={categories}
           onDelete={deleteBookmark}
           loading={loading}
+          onSearch={searchBookmarks}
+          onSearchByTags={searchBookmarksByTags}
         />
       </div>
     </div>

@@ -1,6 +1,6 @@
+import { isChromeExtension } from "@/utils/extension";
 import { Button } from "@bookmark-pro/ui";
 import { Bookmark, Globe, PencilLine, Trash2 } from "lucide-react";
-import { isChromeExtension } from "@/lib/extension";
 
 interface CurrentPageCardProps {
   currentTab: chrome.tabs.Tab | null;
@@ -9,11 +9,11 @@ interface CurrentPageCardProps {
   onDeleteCurrentBookmark: () => void;
 }
 
-const CurrentPageCard = ({ 
-  currentTab, 
-  isCurrentUrlSaved, 
-  onAddBookmark, 
-  onDeleteCurrentBookmark 
+const CurrentPageCard = ({
+  currentTab,
+  isCurrentUrlSaved,
+  onAddBookmark,
+  onDeleteCurrentBookmark,
 }: CurrentPageCardProps) => {
   return (
     <div className="p-4 bg-gray-50 rounded-lg">
@@ -30,7 +30,7 @@ const CurrentPageCard = ({
           </p>
         </div>
       </div>
-      
+
       <div className="flex space-x-2">
         {isCurrentUrlSaved ? (
           <>

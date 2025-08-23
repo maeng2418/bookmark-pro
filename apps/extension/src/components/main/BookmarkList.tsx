@@ -1,19 +1,19 @@
-import { useDebounce } from "@/hooks/useDebounce";
-import { Category } from "@/supabase/categories";
-import { BookmarkType } from "@/types";
-import { Input, ToggleGroup, ToggleGroupItem } from "@bookmark-pro/ui";
-import { BookmarkIcon, Search } from "lucide-react";
-import { useState } from "react";
-import BookmarkItem from "./BookmarkItem";
+import { useDebounce } from '@/hooks/useDebounce'
+import { Category } from '@/supabase/categories'
+import { BookmarkType } from '@/types'
+import { Input, ToggleGroup, ToggleGroupItem } from '@bookmark-pro/ui'
+import { BookmarkIcon, Search } from 'lucide-react'
+import { useState } from 'react'
+import BookmarkItem from './BookmarkItem'
 
 type BookmarkListProps = {
-  bookmarks: BookmarkType[];
-  categories: Category[];
-  onDelete: (bookmarkId: string) => Promise<boolean>;
-  loading?: boolean;
-  onSearch?: (query: string, categoryId?: string) => Promise<BookmarkType[]>;
-  onSearchByTags?: (tags: string[]) => Promise<BookmarkType[]>;
-};
+  bookmarks: BookmarkType[]
+  categories: Category[]
+  onDelete: (bookmarkId: string) => Promise<boolean>
+  loading?: boolean
+  onSearch?: (query: string, categoryId?: string) => Promise<BookmarkType[]>
+  onSearchByTags?: (tags: string[]) => Promise<BookmarkType[]>
+}
 
 const BookmarkList = ({
   bookmarks,
@@ -23,26 +23,23 @@ const BookmarkList = ({
   onSearch,
   onSearchByTags,
 }: BookmarkListProps) => {
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>();
-  const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery, 300);
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>()
+  const [searchQuery, setSearchQuery] = useState('')
+  const debouncedSearchQuery = useDebounce(searchQuery, 300)
 
   const filteredBookmarks = bookmarks.filter((bookmark) => {
-    const lowerCaseSearch = debouncedSearchQuery.toLowerCase();
+    const lowerCaseSearch = debouncedSearchQuery.toLowerCase()
     // 전체 카테고리 선택시 모든 북마크 표시, 특정 카테고리 선택시 해당 카테고리만 표시
-    const matchesCategory = !selectedCategory || bookmark.category.id === selectedCategory.id;
+    const matchesCategory = !selectedCategory || bookmark.category.id === selectedCategory.id
     const matchesSearch =
       !debouncedSearchQuery ||
       bookmark.title?.toLowerCase().includes(lowerCaseSearch) ||
       bookmark.url.toLowerCase().includes(lowerCaseSearch) ||
-      bookmark.tags?.some((tag) =>
-        tag.toLowerCase().includes(lowerCaseSearch)
-      ) ||
-      (bookmark.description &&
-        bookmark.description.toLowerCase().includes(lowerCaseSearch));
+      bookmark.tags?.some((tag) => tag.toLowerCase().includes(lowerCaseSearch)) ||
+      (bookmark.description && bookmark.description.toLowerCase().includes(lowerCaseSearch))
 
-    return matchesCategory && matchesSearch;
-  });
+    return matchesCategory && matchesSearch
+  })
 
   return (
     <>
@@ -67,8 +64,8 @@ const BookmarkList = ({
             value="all"
             className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
               !selectedCategory
-                ? "text-white bg-blue-500"
-                : "text-gray-600 bg-gray-100 hover:bg-gray-200"
+                ? 'text-white bg-blue-500'
+                : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
             } !rounded-button`}
             onClick={() => setSelectedCategory(null)}
           >
@@ -81,8 +78,8 @@ const BookmarkList = ({
                 value={category.id!}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors flex items-center space-x-1 ${
                   selectedCategory?.id === category.id
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 } !rounded-button`}
                 onClick={() => setSelectedCategory(category)}
               >
@@ -92,7 +89,7 @@ const BookmarkList = ({
                 ></div>
                 <span>{category.name}</span>
               </ToggleGroupItem>
-            );
+            )
           })}
         </ToggleGroup>
 
@@ -102,9 +99,7 @@ const BookmarkList = ({
               <BookmarkIcon width={24} height={24} className="text-gray-400" />
             </div>
             <p className="text-sm text-gray-500">
-              {debouncedSearchQuery
-                ? "검색 결과가 없습니다."
-                : "저장된 북마크가 없습니다."}
+              {debouncedSearchQuery ? '검색 결과가 없습니다.' : '저장된 북마크가 없습니다.'}
             </p>
           </div>
         ) : (
@@ -119,7 +114,7 @@ const BookmarkList = ({
         )}
       </div>
     </>
-  );
-};
+  )
+}
 
-export default BookmarkList;
+export default BookmarkList

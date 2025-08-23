@@ -1,25 +1,19 @@
-import GoogleIcon from "@/assets/images/icon-google.svg?react";
-import { useAuth } from "@/contexts/AuthContext";
-import { AuthFormData, authSchema } from "@/schemas/auth.schema";
-import {
-  Button,
-  Input,
-  Label,
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@bookmark-pro/ui";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Bookmark, Eye, EyeOff, Lock, Mail } from "lucide-react";
-import { useState } from "react";
-import { useForm, useController } from "react-hook-form";
+import GoogleIcon from '@/assets/images/icon-google.svg?react'
+import { useAuth } from '@/contexts/AuthContext'
+import { AuthFormData, authSchema } from '@/schemas/auth.schema'
+import { Button, Input, Label, ToggleGroup, ToggleGroupItem } from '@bookmark-pro/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Bookmark, Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { useState } from 'react'
+import { useForm, useController } from 'react-hook-form'
 
 const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [isLogin, setIsLogin] = useState(true)
+  const [showPassword, setShowPassword] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
 
-  const { signIn, signUp, signInWithGoogle } = useAuth();
+  const { signIn, signUp, signInWithGoogle } = useAuth()
 
   const {
     handleSubmit,
@@ -28,61 +22,57 @@ const AuthForm = () => {
   } = useForm<AuthFormData>({
     resolver: zodResolver(authSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-  });
+  })
 
-  const {
-    field: emailField,
-  } = useController({
-    name: "email",
+  const { field: emailField } = useController({
+    name: 'email',
     control,
-  });
+  })
 
-  const {
-    field: passwordField,
-  } = useController({
-    name: "password",
+  const { field: passwordField } = useController({
+    name: 'password',
     control,
-  });
+  })
 
   const onSubmit = async (data: AuthFormData) => {
-    setLoading(true);
-    setError("");
+    setLoading(true)
+    setError('')
 
     try {
       const { error } = isLogin
         ? await signIn(data.email, data.password)
-        : await signUp(data.email, data.password);
+        : await signUp(data.email, data.password)
 
       if (error) {
-        setError(error.message);
+        setError(error.message)
       } else if (!isLogin) {
-        setError("회원가입이 완료되었습니다. 이메일을 확인해주세요.");
+        setError('회원가입이 완료되었습니다. 이메일을 확인해주세요.')
       }
     } catch {
-      setError("오류가 발생했습니다. 다시 시도해주세요.");
+      setError('오류가 발생했습니다. 다시 시도해주세요.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setError("");
+    setLoading(true)
+    setError('')
 
     try {
-      const { error } = await signInWithGoogle();
+      const { error } = await signInWithGoogle()
       if (error) {
-        setError(error.message);
+        setError(error.message)
       }
     } catch {
-      setError("Google 로그인 중 오류가 발생했습니다.");
+      setError('Google 로그인 중 오류가 발생했습니다.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="p-4">
@@ -90,26 +80,20 @@ const AuthForm = () => {
         <div className="flex justify-center items-center mb-4 w-16 h-16 rounded-2xl bg-primary-500">
           <Bookmark fill="currentColor" className="text-2xl text-white" />
         </div>
-        <h1 className="mb-2 text-2xl font-semibold text-gray-900">
-          BookmarkPro
-        </h1>
-        <p className="text-sm text-gray-500">
-          웹사이트를 쉽게 저장하고 관리하세요
-        </p>
+        <h1 className="mb-2 text-2xl font-semibold text-gray-900">BookmarkPro</h1>
+        <p className="text-sm text-gray-500">웹사이트를 쉽게 저장하고 관리하세요</p>
       </div>
 
       <div className="my-6 text-center">
         <ToggleGroup
           type="single"
-          value={isLogin ? "login" : "signup"}
+          value={isLogin ? 'login' : 'signup'}
           className="flex p-1 mb-6 bg-gray-100 rounded-lg"
         >
           <ToggleGroupItem
             value="login"
             className={`flex flex-1 px-4 py-2 rounded-md ${
-              isLogin
-                ? "text-blue-600 bg-white"
-                : "text-gray-600 bg-gray-100 hover:text-gray-900"
+              isLogin ? 'text-blue-600 bg-white' : 'text-gray-600 bg-gray-100 hover:text-gray-900'
             }`}
             onClick={() => setIsLogin(true)}
           >
@@ -118,9 +102,7 @@ const AuthForm = () => {
           <ToggleGroupItem
             value="signup"
             className={`flex flex-1 px-4 py-2 rounded-md  ${
-              !isLogin
-                ? "text-blue-600 bg-white"
-                : "text-gray-600 bg-gray-100 hover:text-gray-900"
+              !isLogin ? 'text-blue-600 bg-white' : 'text-gray-600 bg-gray-100 hover:text-gray-900'
             }`}
             onClick={() => setIsLogin(false)}
           >
@@ -144,23 +126,18 @@ const AuthForm = () => {
               className="pl-10 border-gray-300"
             />
           </div>
-          {errors.email && (
-            <p className="text-xs text-red-600">{errors.email.message}</p>
-          )}
+          {errors.email && <p className="text-xs text-red-600">{errors.email.message}</p>}
         </div>
 
         <div className="space-y-2">
-          <Label
-            htmlFor="password"
-            className="text-sm font-medium text-gray-700"
-          >
+          <Label htmlFor="password" className="text-sm font-medium text-gray-700">
             비밀번호
           </Label>
           <div className="relative">
             <Lock className="absolute left-3 top-1/2 w-4 h-4 text-gray-400 transform -translate-y-1/2" />
             <Input
               id="password"
-              type={showPassword ? "text" : "password"}
+              type={showPassword ? 'text' : 'password'}
               {...passwordField}
               placeholder="비밀번호를 입력하세요"
               className="pr-10 pl-10 border-gray-300"
@@ -170,29 +147,19 @@ const AuthForm = () => {
               onClick={() => setShowPassword(!showPassword)}
               className="absolute right-3 top-1/2 text-gray-400 transform -translate-y-1/2 hover:text-gray-600"
             >
-              {showPassword ? (
-                <EyeOff className="w-4 h-4" />
-              ) : (
-                <Eye className="w-4 h-4" />
-              )}
+              {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          {errors.password && (
-            <p className="text-xs text-red-600">{errors.password.message}</p>
-          )}
+          {errors.password && <p className="text-xs text-red-600">{errors.password.message}</p>}
         </div>
 
-        {error && (
-          <div className="p-2 text-sm text-red-600 bg-red-50 rounded">
-            {error}
-          </div>
-        )}
+        {error && <div className="p-2 text-sm text-red-600 bg-red-50 rounded">{error}</div>}
         <Button
           type="submit"
           disabled={!isValid || loading}
           className="px-4 py-3 w-full text-white bg-primary-500 hover:bg-primary-600"
         >
-          {loading ? "처리중..." : isLogin ? "로그인" : "회원가입"}
+          {loading ? '처리중...' : isLogin ? '로그인' : '회원가입'}
         </Button>
 
         <div className="relative my-6">
@@ -215,7 +182,7 @@ const AuthForm = () => {
         </Button>
       </form>
     </div>
-  );
-};
+  )
+}
 
-export default AuthForm;
+export default AuthForm

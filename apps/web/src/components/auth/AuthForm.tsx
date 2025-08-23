@@ -1,6 +1,6 @@
-"use client";
+'use client'
 
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from '@/supabase/client'
 import {
   Alert,
   AlertDescription,
@@ -17,39 +17,39 @@ import {
   TabsList,
   TabsTrigger,
   useToast,
-} from "@bookmark-pro/ui";
-import { Bookmark, Eye, EyeOff, Mail } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+} from '@bookmark-pro/ui'
+import { Bookmark, Eye, EyeOff, Mail } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
-const Auth = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
-  const { toast } = useToast();
+const AuthForm = () => {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter()
+  const { toast } = useToast()
 
   useEffect(() => {
     // Check if user is already logged in
     const checkUser = async () => {
       const {
         data: { session },
-      } = await supabase.auth.getSession();
+      } = await supabase.auth.getSession()
       if (session) {
-        router.push("/dashboard");
+        router.push('/dashboard')
       }
-    };
-    checkUser();
-  }, [router]);
+    }
+    checkUser()
+  }, [router])
 
   const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    const redirectUrl = `${window.location.origin}/dashboard`
 
     const { error } = await supabase.auth.signUp({
       email,
@@ -57,55 +57,55 @@ const Auth = () => {
       options: {
         emailRedirectTo: redirectUrl,
       },
-    });
+    })
 
     if (error) {
-      setError(error.message);
+      setError(error.message)
     } else {
       toast({
-        title: "계정이 생성되었습니다!",
-        description: "이메일을 확인하여 계정을 활성화하세요.",
-      });
+        title: '계정이 생성되었습니다!',
+        description: '이메일을 확인하여 계정을 활성화하세요.',
+      })
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+    e.preventDefault()
+    setLoading(true)
+    setError('')
 
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
-    });
+    })
 
     if (error) {
-      setError(error.message);
+      setError(error.message)
     } else {
-      router.push("/dashboard");
+      router.push('/dashboard')
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setError("");
+    setLoading(true)
+    setError('')
 
-    const redirectUrl = `${window.location.origin}/dashboard`;
+    const redirectUrl = `${window.location.origin}/dashboard`
 
     const { error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: 'google',
       options: {
         redirectTo: redirectUrl,
       },
-    });
+    })
 
     if (error) {
-      setError(error.message);
+      setError(error.message)
     }
-    setLoading(false);
-  };
+    setLoading(false)
+  }
 
   return (
     <div className="flex justify-center items-center p-4 min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
@@ -114,27 +114,19 @@ const Auth = () => {
           <div className="inline-flex justify-center items-center mb-4 w-16 h-16 rounded-2xl bg-gradient-primary">
             <Bookmark className="w-8 h-8 text-white" />
           </div>
-          <h1 className="mb-2 text-3xl font-bold text-foreground">
-            Bookmark Pro
-          </h1>
-          <p className="text-muted-foreground">
-            북마크를 스마트하게 관리하세요
-          </p>
+          <h1 className="mb-2 text-3xl font-bold text-foreground">Bookmark Pro</h1>
+          <p className="text-muted-foreground">북마크를 스마트하게 관리하세요</p>
         </div>
 
         <Card className="backdrop-blur-sm bg-card/50 border-border/50">
           <CardHeader className="text-center">
             <CardTitle className="text-2xl">환영합니다</CardTitle>
-            <CardDescription>
-              계정에 로그인하거나 새 계정을 만드세요
-            </CardDescription>
+            <CardDescription>계정에 로그인하거나 새 계정을 만드세요</CardDescription>
           </CardHeader>
           <CardContent>
             {error && (
               <Alert className="mb-6 border-destructive/20 bg-destructive/10">
-                <AlertDescription className="text-destructive">
-                  {error}
-                </AlertDescription>
+                <AlertDescription className="text-destructive">{error}</AlertDescription>
               </Alert>
             )}
 
@@ -202,7 +194,7 @@ const Auth = () => {
                     <div className="relative">
                       <Input
                         id="signin-password"
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="비밀번호를 입력하세요"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -225,7 +217,7 @@ const Auth = () => {
                     </div>
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "로그인 중..." : "로그인"}
+                    {loading ? '로그인 중...' : '로그인'}
                   </Button>
                 </form>
               </TabsContent>
@@ -252,7 +244,7 @@ const Auth = () => {
                     <div className="relative">
                       <Input
                         id="signup-password"
-                        type={showPassword ? "text" : "password"}
+                        type={showPassword ? 'text' : 'password'}
                         placeholder="8자 이상의 비밀번호"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -276,7 +268,7 @@ const Auth = () => {
                     </div>
                   </div>
                   <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "계정 생성 중..." : "계정 만들기"}
+                    {loading ? '계정 생성 중...' : '계정 만들기'}
                   </Button>
                 </form>
               </TabsContent>
@@ -285,7 +277,7 @@ const Auth = () => {
         </Card>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Auth;
+export default AuthForm

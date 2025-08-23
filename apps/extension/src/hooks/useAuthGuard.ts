@@ -1,20 +1,20 @@
-import { useAuth } from "@/contexts/AuthContext";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useAuth } from '@/contexts/AuthContext'
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export const useAuthGuard = (requireAuth = true) => {
-  const { user, loading } = useAuth();
-  const navigate = useNavigate();
+  const { user, loading } = useAuth()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    if (loading) return;
+    if (loading) return
 
     if (requireAuth && !user) {
-      navigate("/auth", { replace: true });
+      navigate('/auth', { replace: true })
     } else if (!requireAuth && user) {
-      navigate("/", { replace: true });
+      navigate('/', { replace: true })
     }
-  }, [user, loading, requireAuth]);
+  }, [user, loading, requireAuth])
 
-  return { user, loading, isAuthenticated: !!user };
-};
+  return { user, loading, isAuthenticated: !!user }
+}

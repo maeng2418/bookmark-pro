@@ -5,51 +5,46 @@ import {
   deleteBookmark,
   searchBookmarks,
   searchBookmarksByTags,
-} from "@/supabase/bookmarks";
+} from '@/supabase/bookmarks'
 import type {
   BookmarkApiResponse,
   BookmarkCreateData,
   BookmarkType,
   BookmarkUpdateData,
-} from "@/types";
+} from '@/types'
 
 export class BookmarkService {
   static async fetchBookmarks(userId: string): Promise<BookmarkType[]> {
-    return fetchBookmarks(userId);
+    return fetchBookmarks(userId)
   }
 
   static async searchBookmarks(
     userId: string,
     searchQuery: string,
-    categoryId?: string
+    categoryId?: string,
   ): Promise<BookmarkType[]> {
-    return searchBookmarks(userId, searchQuery, categoryId);
+    return searchBookmarks(userId, searchQuery, categoryId)
   }
 
-  static async searchBookmarksByTags(
-    userId: string,
-    tags: string[]
-  ): Promise<BookmarkType[]> {
-    return searchBookmarksByTags(userId, tags);
+  static async searchBookmarksByTags(userId: string, tags: string[]): Promise<BookmarkType[]> {
+    return searchBookmarksByTags(userId, tags)
   }
 
   static async createBookmark(
     bookmarkData: BookmarkCreateData,
-    userId: string
+    userId: string,
   ): Promise<BookmarkApiResponse> {
-    return saveBookmark(bookmarkData, userId);
+    return saveBookmark(bookmarkData, userId)
   }
 
   static async updateBookmark(
     bookmarkId: string,
-    updates: BookmarkUpdateData
+    updates: BookmarkUpdateData,
   ): Promise<BookmarkApiResponse> {
-    return updateBookmark(bookmarkId, updates);
+    return updateBookmark(bookmarkId, updates)
   }
 
-  static async deleteBookmark(
-    bookmarkId: string
-  ): Promise<BookmarkApiResponse> {
-    return deleteBookmark(bookmarkId);
+  static async deleteBookmark(bookmarkId: string): Promise<BookmarkApiResponse> {
+    return deleteBookmark(bookmarkId)
   }
 }

@@ -1,67 +1,56 @@
-import { TagFormData, tagSchema } from "@/schemas/tag.schema";
-import { Badge, Button, Input, Label } from "@bookmark-pro/ui";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Plus, X } from "lucide-react";
-import { KeyboardEvent } from "react";
-import {
-  FieldError,
-  FieldErrorsImpl,
-  Merge,
-  useController,
-  useForm,
-} from "react-hook-form";
+import { TagFormData, tagSchema } from '@/schemas/tag.schema'
+import { Badge, Button, Input, Label } from '@bookmark-pro/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Plus, X } from 'lucide-react'
+import { KeyboardEvent } from 'react'
+import { FieldError, FieldErrorsImpl, Merge, useController, useForm } from 'react-hook-form'
 
 type TagFormProp = {
-  tags: string[];
+  tags: string[]
   error?: Merge<
     FieldError,
     FieldErrorsImpl<{
-      tag: string;
+      tag: string
     }>
-  >;
-  onAddTag: (tag: string) => void;
-  onRemoveTag: (tag: string) => void;
-};
+  >
+  onAddTag: (tag: string) => void
+  onRemoveTag: (tag: string) => void
+}
 
-const TagForm = ({
-  tags,
-  error: errorProp,
-  onAddTag,
-  onRemoveTag,
-}: TagFormProp) => {
+const TagForm = ({ tags, error: errorProp, onAddTag, onRemoveTag }: TagFormProp) => {
   const {
     handleSubmit,
     control,
     formState: { errors, isValid },
     reset,
   } = useForm<TagFormData>({
-    defaultValues: { tag: "" },
+    defaultValues: { tag: '' },
     resolver: zodResolver(tagSchema),
-  });
+  })
 
   const { field: tagField } = useController({
-    name: "tag",
+    name: 'tag',
     control,
-  });
+  })
 
   const handleSubmitTag = handleSubmit((data: TagFormData) => {
-    const trimmedTag = data.tag.trim();
+    const trimmedTag = data.tag.trim()
     if (trimmedTag && !tags.includes(trimmedTag)) {
-      onAddTag(trimmedTag);
+      onAddTag(trimmedTag)
     }
-    reset();
-  });
+    reset()
+  })
 
   const handleRemoveTag = (tagToRemove: string) => {
-    onRemoveTag(tagToRemove);
-  };
+    onRemoveTag(tagToRemove)
+  }
 
   const handleKeyPress = (e: KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleSubmitTag();
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      handleSubmitTag()
     }
-  };
+  }
 
   return (
     <div className="flex flex-col space-y-1">
@@ -74,9 +63,7 @@ const TagForm = ({
             placeholder="태그를 입력하세요"
             className="text-sm rounded-lg"
           />
-          {errors.tag && (
-            <p className="mt-1 text-xs text-red-600">{errors.tag.message}</p>
-          )}
+          {errors.tag && <p className="mt-1 text-xs text-red-600">{errors.tag.message}</p>}
         </div>
         <Button
           type="button"
@@ -92,11 +79,7 @@ const TagForm = ({
       {tags.length > 0 && (
         <div className="flex flex-wrap gap-1">
           {tags.map((tag) => (
-            <Badge
-              key={tag}
-              variant="secondary"
-              className="flex gap-1 items-center text-xs"
-            >
+            <Badge key={tag} variant="secondary" className="flex gap-1 items-center text-xs">
               #{tag}
               <Button
                 type="button"
@@ -111,7 +94,7 @@ const TagForm = ({
       )}
       {errorProp && <p className="text-xs text-red-600">{errorProp.message}</p>}
     </div>
-  );
-};
+  )
+}
 
-export default TagForm;
+export default TagForm

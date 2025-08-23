@@ -1,45 +1,43 @@
-import type { BookmarkType } from "@/types";
-import { getCurrentTab } from "@/utils/extension";
-import { useEffect, useState } from "react";
+import type { BookmarkType } from '@/types'
+import { getCurrentTab } from '@/utils/extension'
+import { useEffect, useState } from 'react'
 
 type UseCurrentTabReturn = {
-  currentTab: chrome.tabs.Tab | null;
-  isCurrentUrlSaved: boolean;
-  currentBookmark: BookmarkType | undefined;
-  loading: boolean;
-};
+  currentTab: chrome.tabs.Tab | null
+  isCurrentUrlSaved: boolean
+  currentBookmark: BookmarkType | undefined
+  loading: boolean
+}
 
-export const useCurrentTab = (
-  bookmarks: BookmarkType[]
-): UseCurrentTabReturn => {
-  const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null);
-  const [loading, setLoading] = useState(true);
+export const useCurrentTab = (bookmarks: BookmarkType[]): UseCurrentTabReturn => {
+  const [currentTab, setCurrentTab] = useState<chrome.tabs.Tab | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadCurrentTab = async () => {
       try {
-        const tab = await getCurrentTab();
-        setCurrentTab(tab);
+        const tab = await getCurrentTab()
+        setCurrentTab(tab)
       } catch (error) {
-        console.error("Failed to get current tab:", error);
+        console.error('Failed to get current tab:', error)
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    loadCurrentTab();
-  }, []);
+    loadCurrentTab()
+  }, [])
 
   const currentBookmark = currentTab?.url
     ? bookmarks.find((bookmark) => bookmark.url === currentTab.url)
-    : undefined;
+    : undefined
 
-  const isCurrentUrlSaved = !!currentBookmark;
+  const isCurrentUrlSaved = !!currentBookmark
 
   return {
     currentTab,
     isCurrentUrlSaved,
     currentBookmark,
     loading,
-  };
-};
+  }
+}

@@ -1,28 +1,24 @@
-import { BookmarkType } from "@/types";
-import { Badge, Button } from "@bookmark-pro/ui";
-import { PencilLine, Trash2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { BookmarkType } from '@/types'
+import { Badge, Button } from '@bookmark-pro/ui'
+import { PencilLine, Trash2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 
 type BookmarkItemProps = {
-  bookmark: BookmarkType;
-  onDelete: (bookmarkId: string) => Promise<boolean>;
-  loading?: boolean;
-};
+  bookmark: BookmarkType
+  onDelete: (bookmarkId: string) => Promise<boolean>
+  loading?: boolean
+}
 
-const BookmarkItem = ({
-  bookmark,
-  onDelete,
-  loading = false,
-}: BookmarkItemProps) => {
-  const navigate = useNavigate();
+const BookmarkItem = ({ bookmark, onDelete, loading = false }: BookmarkItemProps) => {
+  const navigate = useNavigate()
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
+    return new Date(dateString).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
+  }
 
   return (
     <div
@@ -37,24 +33,22 @@ const BookmarkItem = ({
                 <span
                   className="w-3 h-3 rounded-full"
                   style={{
-                    backgroundColor: bookmark.category.color || "#6B7280",
+                    backgroundColor: bookmark.category.color || '#6B7280',
                   }}
                 />
                 <span>{bookmark.category.name}</span>
               </div>
             )}
-            <span className="text-xs text-gray-400">
-              {formatDate(bookmark.created_at)}
-            </span>
+            <span className="text-xs text-gray-400">{formatDate(bookmark.created_at)}</span>
           </div>
           <div className="flex items-center ml-2 space-x-1">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => {
-                navigate("/bookmark-form", {
+                navigate('/bookmark-form', {
                   state: { editBookmark: bookmark },
-                });
+                })
               }}
               className="flex justify-center items-center w-7 h-7 text-gray-600 hover:bg-gray-100"
             >
@@ -64,7 +58,7 @@ const BookmarkItem = ({
               variant="ghost"
               size="icon"
               onClick={async () => {
-                await onDelete(bookmark.id);
+                await onDelete(bookmark.id)
               }}
               disabled={loading}
               className="flex justify-center items-center w-7 h-7 text-red-500 hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
@@ -74,7 +68,7 @@ const BookmarkItem = ({
           </div>
         </div>
         <h3 className="mb-1 text-sm font-medium text-gray-800 truncate">
-          {bookmark.title || "제목 없음"}
+          {bookmark.title || '제목 없음'}
         </h3>
         <a
           href={bookmark.url}
@@ -86,9 +80,7 @@ const BookmarkItem = ({
         </a>
 
         {bookmark.description && (
-          <p className="p-3 text-xs text-gray-600 bg-gray-50 rounded-lg">
-            {bookmark.description}
-          </p>
+          <p className="p-3 text-xs text-gray-600 bg-gray-50 rounded-lg">{bookmark.description}</p>
         )}
 
         {bookmark.tags && bookmark.tags.length > 0 && (
@@ -105,7 +97,7 @@ const BookmarkItem = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default BookmarkItem;
+export default BookmarkItem

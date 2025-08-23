@@ -1,10 +1,10 @@
-import { Button } from "@bookmark-pro/ui";
-import { Plus } from "lucide-react";
+import { Button } from '@bookmark-pro/ui'
+import { Plus } from 'lucide-react'
 
 type PageHeaderProps = {
-  bookmarkCount: number;
-  onAddBookmark: () => void;
-};
+  bookmarkCount: number
+  onAddBookmark: () => void
+}
 
 const PageHeader = ({ bookmarkCount, onAddBookmark }: PageHeaderProps) => {
   return (
@@ -22,7 +22,7 @@ const PageHeader = ({ bookmarkCount, onAddBookmark }: PageHeaderProps) => {
         <span>추가</span>
       </Button>
     </div>
-  );
-};
+  )
+}
 
-export default PageHeader;
+export default PageHeader

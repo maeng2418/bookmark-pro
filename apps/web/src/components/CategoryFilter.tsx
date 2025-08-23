@@ -1,11 +1,11 @@
-import { Badge, Button, ScrollArea } from "@bookmark-pro/ui";
-import { Folder, FolderOpen } from "lucide-react";
+import { Badge, Button, ScrollArea } from '@bookmark-pro/ui'
+import { Folder, FolderOpen } from 'lucide-react'
 
 interface CategoryFilterProps {
-  categories: string[];
-  selectedCategory: string | null;
-  onCategorySelect: (category: string | null) => void;
-  bookmarkCounts: Record<string, number>;
+  categories: string[]
+  selectedCategory: string | null
+  onCategorySelect: (category: string | null) => void
+  bookmarkCounts: Record<string, number>
 }
 
 export const CategoryFilter = ({
@@ -24,10 +24,10 @@ export const CategoryFilter = ({
       <ScrollArea className="h-fit max-h-60">
         <div className="space-y-1">
           <Button
-            variant={selectedCategory === null ? "default" : "ghost"}
+            variant={selectedCategory === null ? 'default' : 'ghost'}
             onClick={() => onCategorySelect(null)}
             className={`w-full justify-between text-left h-auto py-2 px-3 ${
-              selectedCategory === null ? "bg-bookmark-gradient text-white" : ""
+              selectedCategory === null ? 'bg-bookmark-gradient text-white' : ''
             }`}
           >
             <div className="flex items-center gap-2">
@@ -35,22 +35,17 @@ export const CategoryFilter = ({
               <span className="text-sm">전체</span>
             </div>
             <Badge variant="secondary" className="text-xs">
-              {Object.values(bookmarkCounts).reduce(
-                (sum, count) => sum + count,
-                0
-              )}
+              {Object.values(bookmarkCounts).reduce((sum, count) => sum + count, 0)}
             </Badge>
           </Button>
 
           {categories.map((category) => (
             <Button
               key={category}
-              variant={selectedCategory === category ? "default" : "ghost"}
+              variant={selectedCategory === category ? 'default' : 'ghost'}
               onClick={() => onCategorySelect(category)}
               className={`w-full justify-between text-left h-auto py-2 px-3 ${
-                selectedCategory === category
-                  ? "bg-bookmark-gradient text-white"
-                  : ""
+                selectedCategory === category ? 'bg-bookmark-gradient text-white' : ''
               }`}
             >
               <div className="flex items-center gap-2">
@@ -65,5 +60,5 @@ export const CategoryFilter = ({
         </div>
       </ScrollArea>
     </div>
-  );
-};
+  )
+}

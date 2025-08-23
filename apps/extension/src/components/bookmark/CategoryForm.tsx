@@ -1,48 +1,42 @@
-import { Colors } from "@/constants/colors";
-import { useAuth } from "@/contexts/AuthContext";
-import { useToast } from "@/contexts/ToastContext";
-import { CategoryFormData, categorySchema } from "@/schemas/category.schema";
-import { CategoryService } from "@/services";
-import { type Category } from "@/supabase/categories";
-import { Button, Input, Label } from "@bookmark-pro/ui";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { PlusIcon, X } from "lucide-react";
-import { MouseEvent, useEffect, useState } from "react";
-import {
-  FieldError,
-  FieldErrorsImpl,
-  Merge,
-  useController,
-  useForm,
-} from "react-hook-form";
+import { Colors } from '@/constants/colors'
+import { useAuth } from '@/contexts/AuthContext'
+import { useToast } from '@/contexts/ToastContext'
+import { CategoryFormData, categorySchema } from '@/schemas/category.schema'
+import { CategoryService } from '@/services'
+import { type Category } from '@/supabase/categories'
+import { Button, Input, Label } from '@bookmark-pro/ui'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { PlusIcon, X } from 'lucide-react'
+import { MouseEvent, useEffect, useState } from 'react'
+import { FieldError, FieldErrorsImpl, Merge, useController, useForm } from 'react-hook-form'
 
 type CategoryFormProps = {
-  selectedCategory?: Category;
+  selectedCategory?: Category
   error?: Merge<
     FieldError,
     FieldErrorsImpl<{
-      id: string;
-      name: string;
-      color: string;
-      user_id: string;
-      created_at: string;
-      updated_at: string;
+      id: string
+      name: string
+      color: string
+      user_id: string
+      created_at: string
+      updated_at: string
     }>
-  >;
-  onSelectCategory?: (category: Category) => void;
-};
+  >
+  onSelectCategory?: (category: Category) => void
+}
 
 const CategoryForm = ({
   selectedCategory,
   error: errorProp,
   onSelectCategory,
 }: CategoryFormProps) => {
-  const [InitColor] = Colors;
-  const [showCategoryForm, setShowCategoryForm] = useState(false);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [InitColor] = Colors
+  const [showCategoryForm, setShowCategoryForm] = useState(false)
+  const [categories, setCategories] = useState<Category[]>([])
 
-  const { user } = useAuth();
-  const { toast } = useToast();
+  const { user } = useAuth()
+  const { toast } = useToast()
 
   const {
     handleSubmit,
@@ -52,91 +46,89 @@ const CategoryForm = ({
   } = useForm<CategoryFormData>({
     resolver: zodResolver(categorySchema),
     defaultValues: {
-      name: "",
+      name: '',
       color: InitColor,
     },
-  });
+  })
 
   const { field: nameField } = useController({
-    name: "name",
+    name: 'name',
     control,
-  });
+  })
 
   const { field: colorField } = useController({
-    name: "color",
+    name: 'color',
     control,
-  });
+  })
 
   const loadCategories = async () => {
-    if (!user) return;
+    if (!user) return
     try {
-      const categoryList = await CategoryService.fetchCategories(user.id);
-      setCategories(categoryList);
+      const categoryList = await CategoryService.fetchCategories(user.id)
+      setCategories(categoryList)
     } catch (error) {
-      console.error("Error loading categories:", error);
+      console.error('Error loading categories:', error)
       toast({
-        title: "오류",
-        description: "카테고리를 불러오는데 실패했습니다.",
-        variant: "destructive",
-      });
+        title: '오류',
+        description: '카테고리를 불러오는데 실패했습니다.',
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   useEffect(() => {
     if (user) {
-      loadCategories();
+      loadCategories()
     }
-  }, [user]);
+  }, [user])
 
   const handleAddCategory = () => {
-    setShowCategoryForm((prev) => !prev);
-  };
+    setShowCategoryForm((prev) => !prev)
+  }
 
-  const handleSelectCategory =
-    (selectedCategory: Category) => (e: MouseEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      onSelectCategory?.(selectedCategory);
-    };
+  const handleSelectCategory = (selectedCategory: Category) => (e: MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    onSelectCategory?.(selectedCategory)
+  }
 
-  const handleDeleteCategory =
-    (categoryToDelete: Category) => async (e: MouseEvent) => {
-      e.stopPropagation();
+  const handleDeleteCategory = (categoryToDelete: Category) => async (e: MouseEvent) => {
+    e.stopPropagation()
 
-      if (!categoryToDelete.id) return;
+    if (!categoryToDelete.id) return
 
-      try {
-        const result = await CategoryService.deleteCategory(categoryToDelete.id);
+    try {
+      const result = await CategoryService.deleteCategory(categoryToDelete.id)
 
-        if (result.success) {
-          // 카테고리 목록 다시 로드
-          await loadCategories();
+      if (result.success) {
+        // 카테고리 목록 다시 로드
+        await loadCategories()
 
-          toast({
-            title: "카테고리 삭제됨",
-            description: "카테고리가 성공적으로 삭제되었습니다.",
-          });
-        } else {
-          toast({
-            title: "오류",
-            description: result.error || "카테고리 삭제에 실패했습니다.",
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        console.error("Error deleting category:", error);
         toast({
-          title: "오류",
-          description: "카테고리 삭제 중 오류가 발생했습니다.",
-          variant: "destructive",
-        });
+          title: '카테고리 삭제됨',
+          description: '카테고리가 성공적으로 삭제되었습니다.',
+        })
+      } else {
+        toast({
+          title: '오류',
+          description: result.error || '카테고리 삭제에 실패했습니다.',
+          variant: 'destructive',
+        })
       }
-    };
+    } catch (error) {
+      console.error('Error deleting category:', error)
+      toast({
+        title: '오류',
+        description: '카테고리 삭제 중 오류가 발생했습니다.',
+        variant: 'destructive',
+      })
+    }
+  }
 
   const onSubmitCategory = async (data: CategoryFormData) => {
     if (!user) {
-      console.log("No user found, returning");
-      return;
+      console.log('No user found, returning')
+      return
     }
 
     try {
@@ -144,47 +136,44 @@ const CategoryForm = ({
       const newCategory = {
         name: data.name.trim(),
         color: data.color,
-      };
+      }
 
-      const result = await CategoryService.createCategory(newCategory, user.id);
+      const result = await CategoryService.createCategory(newCategory, user.id)
 
       if (result.success && result.data) {
         // 카테고리 목록 새로고침
-        await loadCategories();
+        await loadCategories()
 
         // 새로 생성된 카테고리를 선택하고 폼을 닫음
-        onSelectCategory?.(result.data);
-        reset();
-        setShowCategoryForm(false);
+        onSelectCategory?.(result.data)
+        reset()
+        setShowCategoryForm(false)
 
         toast({
-          title: "카테고리 생성됨",
+          title: '카테고리 생성됨',
           description: `'${result.data.name}' 카테고리가 생성되었습니다.`,
-        });
+        })
       } else {
         toast({
-          title: "오류",
-          description: result.error || "카테고리 생성에 실패했습니다.",
-          variant: "destructive",
-        });
+          title: '오류',
+          description: result.error || '카테고리 생성에 실패했습니다.',
+          variant: 'destructive',
+        })
       }
     } catch (error) {
-      console.error("Error creating category:", error);
+      console.error('Error creating category:', error)
       toast({
-        title: "오류",
-        description: "카테고리 생성 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
+        title: '오류',
+        description: '카테고리 생성 중 오류가 발생했습니다.',
+        variant: 'destructive',
+      })
     }
-  };
+  }
 
   return (
     <>
       <div className="flex justify-between items-center">
-        <Label
-          htmlFor="category"
-          className="mb-1 text-sm font-medium text-gray-700"
-        >
+        <Label htmlFor="category" className="mb-1 text-sm font-medium text-gray-700">
           카테고리
         </Label>
         <Button
@@ -204,14 +193,11 @@ const CategoryForm = ({
             {categories.map((cat) => (
               <Button
                 key={cat.id}
-                className={`${selectedCategory?.id === cat.id ? "border-2 border-blue-500 bg-blue-50" : "border-transparent bg-gray-50 hover:bg-gray-100"} group flex justify-between w-full p-3 transition-colors rounded-xl`}
+                className={`${selectedCategory?.id === cat.id ? 'border-2 border-blue-500 bg-blue-50' : 'border-transparent bg-gray-50 hover:bg-gray-100'} group flex justify-between w-full p-3 transition-colors rounded-xl`}
                 onClick={handleSelectCategory(cat)}
               >
                 <div className="flex items-center space-x-2">
-                  <div
-                    className="w-4 h-4 rounded-full"
-                    style={{ backgroundColor: cat.color }}
-                  />
+                  <div className="w-4 h-4 rounded-full" style={{ backgroundColor: cat.color }} />
                   <span className="text-sm font-medium"> {cat.name}</span>
                 </div>
                 <Button
@@ -236,9 +222,7 @@ const CategoryForm = ({
               placeholder="카테고리를 입력하세요"
               className="text-sm rounded-lg"
             />
-            {errors.name && (
-              <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>
-            )}
+            {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
           </div>
           <div className="flex items-center space-x-2">
             {Colors.map((color) => (
@@ -247,17 +231,13 @@ const CategoryForm = ({
                 type="button"
                 onClick={() => colorField.onChange(color)}
                 className={`w-6 h-6 p-0 rounded-full border-2 ${
-                  colorField.value === color
-                    ? "border-gray-400"
-                    : "border-gray-200"
+                  colorField.value === color ? 'border-gray-400' : 'border-gray-200'
                 }`}
                 style={{ backgroundColor: color }}
               />
             ))}
           </div>
-          {errors.color && (
-            <p className="text-xs text-red-600">{errors.color.message}</p>
-          )}
+          {errors.color && <p className="text-xs text-red-600">{errors.color.message}</p>}
           <div className="flex space-x-2">
             <Button
               disabled={!isValid}
@@ -269,8 +249,8 @@ const CategoryForm = ({
             <Button
               type="button"
               onClick={() => {
-                setShowCategoryForm(false);
-                reset();
+                setShowCategoryForm(false)
+                reset()
               }}
               className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300 transition-colors !rounded-button"
             >
@@ -281,7 +261,7 @@ const CategoryForm = ({
       )}
       {errorProp && <p className="text-xs text-red-600">{errorProp.message}</p>}
     </>
-  );
-};
+  )
+}
 
-export default CategoryForm;
+export default CategoryForm

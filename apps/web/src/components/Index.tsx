@@ -1,7 +1,7 @@
-import Dashboard from "./Dashboard";
+import Dashboard from './Dashboard'
 
 const Index = () => {
-  return <Dashboard />;
-};
+  return <Dashboard />
+}
 
-export default Index;
+export default Index

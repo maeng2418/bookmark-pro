@@ -1,84 +1,73 @@
-import Toast, { ToastProps } from "@/components/common/Toast";
-import { createContext, ReactNode, useContext, useState } from "react";
+import Toast, { ToastProps } from '@/components/common/Toast'
+import { createContext, ReactNode, useContext, useState } from 'react'
 
 type ToastOptions = {
-  title?: string;
-  description?: string;
-  variant?: "default" | "destructive";
-  duration?: number;
-};
+  title?: string
+  description?: string
+  variant?: 'default' | 'destructive'
+  duration?: number
+}
 
 type ToastContextType = {
-  showToast: (
-    message: string,
-    type: ToastProps["type"],
-    duration?: number
-  ) => void;
-  showSuccess: (message: string, duration?: number) => void;
-  showError: (message: string, duration?: number) => void;
-  showWarning: (message: string, duration?: number) => void;
-  toast: (options: ToastOptions) => void;
-};
+  showToast: (message: string, type: ToastProps['type'], duration?: number) => void
+  showSuccess: (message: string, duration?: number) => void
+  showError: (message: string, duration?: number) => void
+  showWarning: (message: string, duration?: number) => void
+  toast: (options: ToastOptions) => void
+}
 
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
+const ToastContext = createContext<ToastContextType | undefined>(undefined)
 
 type ToastProviderProps = {
-  children: ReactNode;
-};
+  children: ReactNode
+}
 
 type ToastState = {
-  id: string;
-  message: string;
-  type: ToastProps["type"];
-  duration?: number;
-};
+  id: string
+  message: string
+  type: ToastProps['type']
+  duration?: number
+}
 
 export const ToastProvider = ({ children }: ToastProviderProps) => {
-  const [toasts, setToasts] = useState<ToastState[]>([]);
+  const [toasts, setToasts] = useState<ToastState[]>([])
 
-  const showToast = (
-    message: string,
-    type: ToastProps["type"],
-    duration?: number
-  ) => {
-    const id = Date.now().toString();
-    const newToast: ToastState = { id, message, type, duration };
+  const showToast = (message: string, type: ToastProps['type'], duration?: number) => {
+    const id = Date.now().toString()
+    const newToast: ToastState = { id, message, type, duration }
 
-    setToasts((prev) => [...prev, newToast]);
-  };
+    setToasts((prev) => [...prev, newToast])
+  }
 
   const removeToast = (id: string) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  };
+    setToasts((prev) => prev.filter((toast) => toast.id !== id))
+  }
 
   const showSuccess = (message: string, duration?: number) => {
-    showToast(message, "success", duration);
-  };
+    showToast(message, 'success', duration)
+  }
 
   const showError = (message: string, duration?: number) => {
-    showToast(message, "error", duration);
-  };
+    showToast(message, 'error', duration)
+  }
 
   const showWarning = (message: string, duration?: number) => {
-    showToast(message, "warning", duration);
-  };
+    showToast(message, 'warning', duration)
+  }
 
   // @bookmark-pro/ui 호환성을 위한 toast 함수
   const toast = (options: ToastOptions) => {
-    const message = options.description || options.title || "";
-    let type: ToastProps["type"] = "success";
+    const message = options.description || options.title || ''
+    let type: ToastProps['type'] = 'success'
 
-    if (options.variant === "destructive") {
-      type = "error";
-    } else if (
-      options.title?.includes("경고") ||
-      options.description?.includes("경고")
-    ) {
-      type = "warning";
+    if (options.variant === 'destructive') {
+      type = 'error'
+    } else if (options.title?.includes('경고') || options.description?.includes('경고')) {
+      type = 'warning'
     }
 
-    showToast(message, type, options.duration);
-  };
+    showToast(message, type, options.duration)
+  }
 
   const value: ToastContextType = {
     showToast,
@@ -86,7 +75,7 @@ export const ToastProvider = ({ children }: ToastProviderProps) => {
     showError,
     showWarning,
     toast,
-  };
+  }
 
   return (
     <ToastContext.Provider value={value}>
@@ -113,13 +102,13 @@ export const ToastProvider = ({ children }: ToastProviderProps) => {
         </div>
       </div>
     </ToastContext.Provider>
-  );
-};
+  )
+}
 
 export const useToast = () => {
-  const context = useContext(ToastContext);
+  const context = useContext(ToastContext)
   if (context === undefined) {
-    throw new Error("useToast must be used within a ToastProvider");
+    throw new Error('useToast must be used within a ToastProvider')
   }
-  return context;
-};
+  return context
+}

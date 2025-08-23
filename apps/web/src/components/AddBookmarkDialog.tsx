@@ -14,17 +14,17 @@ import {
   SelectTrigger,
   SelectValue,
   useToast,
-} from "@bookmark-pro/ui";
-import { Plus, X } from "lucide-react";
-import { useState } from "react";
-import type { Bookmark } from "./BookmarkCard";
+} from '@bookmark-pro/ui'
+import { Plus, X } from 'lucide-react'
+import { useState } from 'react'
+import type { Bookmark } from './BookmarkCard'
 
 interface AddBookmarkDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSave: (bookmark: Omit<Bookmark, "id" | "createdAt">) => void;
-  categories: string[];
-  editingBookmark?: Bookmark;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onSave: (bookmark: Omit<Bookmark, 'id' | 'createdAt'>) => void
+  categories: string[]
+  editingBookmark?: Bookmark
 }
 
 export const AddBookmarkDialog = ({
@@ -34,43 +34,43 @@ export const AddBookmarkDialog = ({
   categories,
   editingBookmark,
 }: AddBookmarkDialogProps) => {
-  const { toast } = useToast();
-  const [title, setTitle] = useState(editingBookmark?.title || "");
-  const [url, setUrl] = useState(editingBookmark?.url || "");
-  const [category, setCategory] = useState(editingBookmark?.category || "");
-  const [newCategory, setNewCategory] = useState("");
-  const [tags, setTags] = useState<string[]>(editingBookmark?.tags || []);
-  const [newTag, setNewTag] = useState("");
+  const { toast } = useToast()
+  const [title, setTitle] = useState(editingBookmark?.title || '')
+  const [url, setUrl] = useState(editingBookmark?.url || '')
+  const [category, setCategory] = useState(editingBookmark?.category || '')
+  const [newCategory, setNewCategory] = useState('')
+  const [tags, setTags] = useState<string[]>(editingBookmark?.tags || [])
+  const [newTag, setNewTag] = useState('')
 
   const handleSave = () => {
     if (!title.trim() || !url.trim()) {
       toast({
-        title: "오류",
-        description: "제목과 URL은 필수 입력 항목입니다.",
-        variant: "destructive",
-      });
-      return;
+        title: '오류',
+        description: '제목과 URL은 필수 입력 항목입니다.',
+        variant: 'destructive',
+      })
+      return
     }
 
-    const finalCategory = newCategory.trim() || category;
+    const finalCategory = newCategory.trim() || category
     if (!finalCategory) {
       toast({
-        title: "오류",
-        description: "카테고리를 선택하거나 새로 만들어주세요.",
-        variant: "destructive",
-      });
-      return;
+        title: '오류',
+        description: '카테고리를 선택하거나 새로 만들어주세요.',
+        variant: 'destructive',
+      })
+      return
     }
 
     try {
-      new URL(url);
+      new URL(url)
     } catch {
       toast({
-        title: "오류",
-        description: "올바른 URL을 입력해주세요.",
-        variant: "destructive",
-      });
-      return;
+        title: '오류',
+        description: '올바른 URL을 입력해주세요.',
+        variant: 'destructive',
+      })
+      return
     }
 
     onSave({
@@ -78,51 +78,47 @@ export const AddBookmarkDialog = ({
       url: url.trim(),
       category: finalCategory,
       tags: tags.filter((tag) => tag.trim()),
-    });
+    })
 
     // Reset form
-    setTitle("");
-    setUrl("");
-    setCategory("");
-    setNewCategory("");
-    setTags([]);
-    setNewTag("");
-    onOpenChange(false);
+    setTitle('')
+    setUrl('')
+    setCategory('')
+    setNewCategory('')
+    setTags([])
+    setNewTag('')
+    onOpenChange(false)
 
     toast({
-      title: "성공",
-      description: editingBookmark
-        ? "북마크가 수정되었습니다."
-        : "북마크가 저장되었습니다.",
-    });
-  };
+      title: '성공',
+      description: editingBookmark ? '북마크가 수정되었습니다.' : '북마크가 저장되었습니다.',
+    })
+  }
 
   const addTag = () => {
-    const trimmedTag = newTag.trim();
+    const trimmedTag = newTag.trim()
     if (trimmedTag && !tags.includes(trimmedTag)) {
-      setTags([...tags, trimmedTag]);
-      setNewTag("");
+      setTags([...tags, trimmedTag])
+      setNewTag('')
     }
-  };
+  }
 
   const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
-  };
+    setTags(tags.filter((tag) => tag !== tagToRemove))
+  }
 
   const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      action();
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      action()
     }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>
-            {editingBookmark ? "북마크 수정" : "새 북마크 추가"}
-          </DialogTitle>
+          <DialogTitle>{editingBookmark ? '북마크 수정' : '새 북마크 추가'}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -188,10 +184,7 @@ export const AddBookmarkDialog = ({
                 {tags.map((tag, index) => (
                   <Badge key={index} variant="secondary" className="gap-1">
                     #{tag}
-                    <button
-                      onClick={() => removeTag(tag)}
-                      className="hover:text-destructive"
-                    >
+                    <button onClick={() => removeTag(tag)} className="hover:text-destructive">
                       <X className="w-3 h-3" />
                     </button>
                   </Badge>
@@ -205,14 +198,11 @@ export const AddBookmarkDialog = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             취소
           </Button>
-          <Button
-            onClick={handleSave}
-            className="bg-bookmark-gradient hover:opacity-90"
-          >
-            {editingBookmark ? "수정" : "저장"}
+          <Button onClick={handleSave} className="bg-bookmark-gradient hover:opacity-90">
+            {editingBookmark ? '수정' : '저장'}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  );
-};
+  )
+}

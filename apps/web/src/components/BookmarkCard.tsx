@@ -1,35 +1,28 @@
-import Image from "next/image";
-import {
-  Badge,
-  Button,
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@bookmark-pro/ui";
-import { Edit3, ExternalLink, Globe, Trash2 } from "lucide-react";
+import Image from 'next/image'
+import { Badge, Button, Card, CardContent, CardFooter, CardHeader } from '@bookmark-pro/ui'
+import { Edit3, ExternalLink, Globe, Trash2 } from 'lucide-react'
 
 export interface Bookmark {
-  id: string;
-  title: string;
-  url: string;
-  category: string;
-  tags: string[];
-  createdAt: Date | string;
-  favicon?: string;
+  id: string
+  title: string
+  url: string
+  category: string
+  tags: string[]
+  createdAt: Date | string
+  favicon?: string
 }
 
 interface BookmarkCardProps {
-  bookmark?: Bookmark;
-  id?: string;
-  title?: string;
-  url?: string;
-  category?: string;
-  tags?: string[];
-  createdAt?: string;
-  favicon?: string;
-  onEdit: (bookmark?: Bookmark) => void;
-  onDelete: (id: string) => void;
+  bookmark?: Bookmark
+  id?: string
+  title?: string
+  url?: string
+  category?: string
+  tags?: string[]
+  createdAt?: string
+  favicon?: string
+  onEdit: (bookmark?: Bookmark) => void
+  onDelete: (id: string) => void
 }
 
 export const BookmarkCard = ({
@@ -53,18 +46,18 @@ export const BookmarkCard = ({
     tags: tags || [],
     createdAt: createdAt ? new Date(createdAt) : new Date(),
     favicon,
-  };
+  }
   const handleVisit = () => {
-    window.open(bookmarkData.url, "_blank");
-  };
+    window.open(bookmarkData.url, '_blank')
+  }
 
   const getDomainFromUrl = (url: string) => {
     try {
-      return new URL(url).hostname;
+      return new URL(url).hostname
     } catch {
-      return url;
+      return url
     }
-  };
+  }
 
   return (
     <Card className="group hover:shadow-card-hover transition-all duration-300 animate-scale-in">
@@ -85,9 +78,7 @@ export const BookmarkCard = ({
               )}
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-sm leading-tight truncate">
-                {bookmarkData.title}
-              </h3>
+              <h3 className="font-semibold text-sm leading-tight truncate">{bookmarkData.title}</h3>
               <p className="text-xs text-muted-foreground truncate">
                 {getDomainFromUrl(bookmarkData.url)}
               </p>
@@ -143,5 +134,5 @@ export const BookmarkCard = ({
         </Button>
       </CardFooter>
     </Card>
-  );
-};
+  )
+}

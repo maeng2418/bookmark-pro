@@ -1,16 +1,12 @@
-"use client";
+'use client'
 
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic'
 
-const Dashboard = dynamic(() => import("@/components/Dashboard"), {
+const Dashboard = dynamic(() => import('@/components/Dashboard'), {
   ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center min-h-screen">
-      Loading...
-    </div>
-  ),
-});
+  loading: () => <div className="flex items-center justify-center min-h-screen">Loading...</div>,
+})
 
 export default function HomePage() {
-  return <Dashboard />;
+  return <Dashboard />
 }

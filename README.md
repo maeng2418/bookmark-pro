@@ -115,7 +115,7 @@ bookmark-pro/
    # 웹 앱 + UI 패키지 HMR
    pnpm run web:dev
 
-   # 확장프로그램 + UI 패키지 HMR  
+   # 확장프로그램 + UI 패키지 HMR
    pnpm run extension:dev
 
    # 개별 앱 실행

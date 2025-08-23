@@ -1,12 +1,12 @@
-import { isChromeExtension } from "@/utils/extension";
-import { Button } from "@bookmark-pro/ui";
-import { Bookmark, Globe, PencilLine, Trash2 } from "lucide-react";
+import { isChromeExtension } from '@/utils/extension'
+import { Button } from '@bookmark-pro/ui'
+import { Bookmark, Globe, PencilLine, Trash2 } from 'lucide-react'
 
 interface CurrentPageCardProps {
-  currentTab: chrome.tabs.Tab | null;
-  isCurrentUrlSaved: boolean;
-  onAddBookmark: () => void;
-  onDeleteCurrentBookmark: () => void;
+  currentTab: chrome.tabs.Tab | null
+  isCurrentUrlSaved: boolean
+  onAddBookmark: () => void
+  onDeleteCurrentBookmark: () => void
 }
 
 const CurrentPageCard = ({
@@ -24,9 +24,7 @@ const CurrentPageCard = ({
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-medium text-gray-900">현재 페이지</h3>
           <p className="text-xs text-gray-500 truncate">
-            {isChromeExtension
-              ? currentTab?.url || "URL을 불러오는 중..."
-              : window.location.href}
+            {isChromeExtension ? currentTab?.url || 'URL을 불러오는 중...' : window.location.href}
           </p>
         </div>
       </div>
@@ -64,7 +62,7 @@ const CurrentPageCard = ({
         )}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default CurrentPageCard;
+export default CurrentPageCard

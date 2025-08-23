@@ -1,36 +1,36 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
-import { Button } from '@bookmark-pro/ui';
-import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { Component, ErrorInfo, ReactNode } from 'react'
+import { Button } from '@bookmark-pro/ui'
+import { AlertTriangle, RefreshCw } from 'lucide-react'
 
 interface Props {
-  children: ReactNode;
+  children: ReactNode
 }
 
 interface State {
-  hasError: boolean;
-  error?: Error;
+  hasError: boolean
+  error?: Error
 }
 
 export class ErrorBoundary extends Component<Props, State> {
   public state: State = {
-    hasError: false
-  };
+    hasError: false,
+  }
 
   public static getDerivedStateFromError(error: Error): State {
-    return { hasError: true, error };
+    return { hasError: true, error }
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Extension Error Boundary caught an error:', error, errorInfo);
+    console.error('Extension Error Boundary caught an error:', error, errorInfo)
   }
 
   private handleReload = () => {
-    this.setState({ hasError: false, error: undefined });
+    this.setState({ hasError: false, error: undefined })
     // Chrome Extension에서는 popup을 다시 로드
     if (typeof chrome !== 'undefined' && chrome.runtime) {
-      window.location.reload();
+      window.location.reload()
     }
-  };
+  }
 
   public render() {
     if (this.state.hasError) {
@@ -40,11 +40,9 @@ export class ErrorBoundary extends Component<Props, State> {
             <div className="flex justify-center items-center w-12 h-12 bg-red-100 rounded-full">
               <AlertTriangle className="w-6 h-6 text-red-600" />
             </div>
-            
+
             <div className="text-center">
-              <h2 className="mb-2 text-lg font-semibold text-gray-900">
-                오류가 발생했습니다
-              </h2>
+              <h2 className="mb-2 text-lg font-semibold text-gray-900">오류가 발생했습니다</h2>
               <p className="mb-4 text-sm text-gray-600">
                 예상치 못한 오류가 발생했습니다.
                 <br />
@@ -72,9 +70,9 @@ export class ErrorBoundary extends Component<Props, State> {
             )}
           </div>
         </div>
-      );
+      )
     }
 
-    return this.props.children;
+    return this.props.children
   }
 }

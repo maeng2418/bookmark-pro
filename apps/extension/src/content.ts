@@ -20,12 +20,12 @@ function getFaviconUrl(): string {
   if (favicon) {
     return favicon.href
   }
-  
+
   const shortcutIcon = document.querySelector('link[rel="shortcut icon"]') as HTMLLinkElement
   if (shortcutIcon) {
     return shortcutIcon.href
   }
-  
+
   // 기본 favicon 경로
   return `${window.location.origin}/favicon.ico`
 }
@@ -42,7 +42,7 @@ function openBookmarkDialog() {
   // 팝업 열기 메시지를 background script에 전송
   chrome.runtime.sendMessage({
     action: 'openPopup',
-    data: pageInfo
+    data: pageInfo,
   })
 }
 

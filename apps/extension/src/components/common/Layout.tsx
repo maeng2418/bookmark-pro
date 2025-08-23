@@ -1,38 +1,33 @@
-import { useAuth } from "@/contexts/AuthContext";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
-import { runWithBrowser } from "@/utils/extension";
-import {
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@bookmark-pro/ui";
-import { Bookmark, ExternalLink, LogOut } from "lucide-react";
-import { Outlet, useNavigate } from "react-router-dom";
-import UserProfile from "./UserProfile";
+import { useAuth } from '@/contexts/AuthContext'
+import { useAuthGuard } from '@/hooks/useAuthGuard'
+import { runWithBrowser } from '@/utils/extension'
+import { Button, Popover, PopoverContent, PopoverTrigger } from '@bookmark-pro/ui'
+import { Bookmark, ExternalLink, LogOut } from 'lucide-react'
+import { Outlet, useNavigate } from 'react-router-dom'
+import UserProfile from './UserProfile'
 
 const Layout = () => {
-  const { user } = useAuthGuard(true);
-  const { signOut } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuthGuard(true)
+  const { signOut } = useAuth()
+  const navigate = useNavigate()
 
   const handleSignOut = async () => {
-    await signOut();
-    navigate("/auth");
-  };
+    await signOut()
+    navigate('/auth')
+  }
 
   const handleAccountPage = async () => {
     // 계정 페이지로 이동 (향후 구현)
-    const DASHBOARD_URL = process.env.WEB_URL!;
+    const DASHBOARD_URL = process.env.WEB_URL!
     await runWithBrowser(
       async () => {
-        chrome.tabs.create({ url: DASHBOARD_URL });
+        chrome.tabs.create({ url: DASHBOARD_URL })
       },
       () => {
-        window.open(DASHBOARD_URL, "_blank");
-      }
-    );
-  };
+        window.open(DASHBOARD_URL, '_blank')
+      },
+    )
+  }
 
   return (
     <div className="flex flex-col bg-white">
@@ -47,14 +42,9 @@ const Layout = () => {
           <div className="flex items-center space-x-2">
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="ghost">
-                  {user && <UserProfile user={user} size="md" />}
-                </Button>
+                <Button variant="ghost">{user && <UserProfile user={user} size="md" />}</Button>
               </PopoverTrigger>
-              <PopoverContent
-                className="flex flex-col gap-2 p-2 w-48 bg-white"
-                align="end"
-              >
+              <PopoverContent className="flex flex-col gap-2 p-2 w-48 bg-white" align="end">
                 <Button
                   size="sm"
                   className="flex justify-between p-2 text-left hover:bg-gray-100"
@@ -78,7 +68,7 @@ const Layout = () => {
       </div>
       <Outlet />
     </div>
-  );
-};
+  )
+}
 
-export default Layout;
+export default Layout

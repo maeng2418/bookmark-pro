@@ -27,7 +27,7 @@ export const CategoryFilter = ({
             variant={selectedCategory === null ? 'default' : 'ghost'}
             onClick={() => onCategorySelect(null)}
             className={`w-full justify-between text-left h-auto py-2 px-3 ${
-              selectedCategory === null ? 'bg-bookmark-gradient text-white' : ''
+              selectedCategory === null ? 'bg-blue-500 text-white' : ''
             }`}
           >
             <div className="flex items-center gap-2">
@@ -45,7 +45,7 @@ export const CategoryFilter = ({
               variant={selectedCategory === category ? 'default' : 'ghost'}
               onClick={() => onCategorySelect(category)}
               className={`w-full justify-between text-left h-auto py-2 px-3 ${
-                selectedCategory === category ? 'bg-bookmark-gradient text-white' : ''
+                selectedCategory === category ? 'bg-blue-500 text-white' : ''
               }`}
             >
               <div className="flex items-center gap-2">

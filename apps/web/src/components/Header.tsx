@@ -1,6 +1,6 @@
 import { Button, Input } from '@bookmark-pro/ui'
-import { Bookmark, Plus, Search, User } from 'lucide-react'
 import { User as SupabaseUser } from '@supabase/supabase-js'
+import { Bookmark, Plus, Search, User } from 'lucide-react'
 
 interface HeaderProps {
   onAddBookmark: () => void
@@ -27,21 +27,21 @@ export const Header = ({
 }: HeaderProps) => {
   const handleSearchChange = onSearch || onSearchChange || (() => {})
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
-      <div className="container mx-auto px-4 py-4">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div className="p-2 rounded-lg bg-bookmark-gradient">
-              <Bookmark className="h-6 w-6 text-white" />
+    <header className="sticky top-0 z-50 w-full border-b backdrop-blur-md bg-background/80">
+      <div className="container px-4 py-4 mx-auto">
+        <div className="flex gap-4 justify-between items-center">
+          <div className="flex gap-2 items-center">
+            <div className="p-2 bg-blue-500 rounded-lg">
+              <Bookmark className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-xl font-bold bg-bookmark-gradient bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold text-transparent bg-clip-text bg-blue-500">
               BookmarkPro
             </h1>
           </div>
 
-          <div className="flex-1 max-w-xl mx-4">
+          <div className="flex-1 mx-4 max-w-xl">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 w-4 h-4 transform -translate-y-1/2 text-muted-foreground" />
               <Input
                 placeholder="북마크 검색..."
                 value={searchQuery}
@@ -51,18 +51,18 @@ export const Header = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex gap-2 items-center">
             {isLoggedIn && (
-              <Button onClick={onAddBookmark} className="bg-bookmark-gradient hover:opacity-90">
-                <Plus className="h-4 w-4 mr-2" />
+              <Button onClick={onAddBookmark} className="bg-blue-500 hover:opacity-90">
+                <Plus className="mr-2 w-4 h-4" />
                 추가
               </Button>
             )}
 
             {isLoggedIn ? (
-              <div className="flex items-center gap-2">
-                <div className="hidden sm:flex items-center gap-2 px-3 py-2 rounded-lg bg-muted">
-                  <User className="h-4 w-4" />
+              <div className="flex gap-2 items-center">
+                <div className="hidden gap-2 items-center px-3 py-2 rounded-lg sm:flex bg-muted">
+                  <User className="w-4 h-4" />
                   <span className="text-sm">{userEmail || user?.email || '사용자'}</span>
                 </div>
                 <Button variant="outline" onClick={onLogout}>
@@ -70,8 +70,8 @@ export const Header = ({
                 </Button>
               </div>
             ) : (
-              <Button onClick={onLogin} className="bg-bookmark-gradient hover:opacity-90">
-                구글 로그인
+              <Button onClick={onLogin} className="bg-blue-500 hover:opacity-90">
+                로그인
               </Button>
             )}
           </div>

@@ -1,6 +1,6 @@
-import Image from 'next/image'
 import { Badge, Button, Card, CardContent, CardFooter, CardHeader } from '@bookmark-pro/ui'
 import { Edit3, ExternalLink, Globe, Trash2 } from 'lucide-react'
+import Image from 'next/image'
 
 export interface Bookmark {
   id: string
@@ -126,7 +126,7 @@ export const BookmarkCard = ({
       <CardFooter className="pt-2">
         <Button
           onClick={handleVisit}
-          className="w-full bg-bookmark-gradient hover:opacity-90 text-white"
+          className="w-full bg-blue-500 hover:opacity-90 text-white"
           size="sm"
         >
           <ExternalLink className="h-3 w-3 mr-2" />

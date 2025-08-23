@@ -32,7 +32,6 @@ export default {
         },
       },
       backgroundImage: {
-        'bookmark-gradient': 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
         glassmorphism: 'backdrop-blur(10px) saturate(150%)',
       },
       boxShadow: {

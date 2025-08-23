@@ -198,7 +198,7 @@ export const AddBookmarkDialog = ({
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             취소
           </Button>
-          <Button onClick={handleSave} className="bg-bookmark-gradient hover:opacity-90">
+          <Button onClick={handleSave} className="bg-blue-500 hover:opacity-90">
             {editingBookmark ? '수정' : '저장'}
           </Button>
         </DialogFooter>

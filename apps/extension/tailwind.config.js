@@ -1,40 +1,12 @@
+import baseConfig from '../../packages/ui/tailwind.config.base.js'
+
 /** @type {import('tailwindcss').Config} */
 export default {
+  ...baseConfig,
   content: [
     "./popup.html",
     "./src/**/*.{js,ts,jsx,tsx}",
+    "../../packages/ui/src/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: {
-    extend: {
-      fontFamily: {
-        sans: [
-          "Pretendard Variable",
-          "Pretendard",
-          "-apple-system",
-          "BlinkMacSystemFont",
-          "system-ui",
-          "Roboto",
-          "Helvetica Neue",
-          "Segoe UI",
-          "Apple SD Gothic Neo",
-          "Noto Sans KR",
-          "Malgun Gothic",
-          "Arial",
-          "sans-serif",
-          "Apple Color Emoji",
-          "Segoe UI Emoji",
-          "Segoe UI Symbol"
-        ]
-      },
-      colors: {
-        primary: {
-          50: '#eff6ff',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-        }
-      }
-    },
-  },
-  plugins: [],
+  plugins: [require('tailwindcss-animate')],
 }

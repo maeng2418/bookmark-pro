@@ -62,7 +62,7 @@ const BookmarkList = ({
         >
           <ToggleGroupItem
             value="all"
-            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+            className={`h-auto px-3 py-1 rounded-full text-xs font-medium transition-colors ${
               !selectedCategory
                 ? 'text-white bg-blue-500'
                 : 'text-gray-600 bg-gray-100 hover:bg-gray-200'
@@ -76,7 +76,7 @@ const BookmarkList = ({
               <ToggleGroupItem
                 key={category.id!}
                 value={category.id!}
-                className={`px-3 py-1 rounded-full text-xs font-medium transition-colors flex items-center space-x-1 ${
+                className={`h-auto px-3 py-1 rounded-full text-xs font-medium transition-colors flex items-center space-x-1 ${
                   selectedCategory?.id === category.id
                     ? 'bg-blue-500 text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'

@@ -1,12 +1,14 @@
 import type { Config } from 'tailwindcss'
+import baseConfig from '../../packages/ui/tailwind.config.base.js'
 
 export default {
-  darkMode: ['class'],
+  ...baseConfig,
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
     './app/**/*.{ts,tsx}',
     './src/**/*.{ts,tsx}',
+    '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
   ],
   prefix: '',
   theme: {
@@ -48,6 +50,10 @@ export default {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
           glow: 'hsl(var(--primary-glow))',
+          50: '#eff6ff',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
@@ -90,12 +96,12 @@ export default {
         sm: 'calc(var(--radius) - 4px)',
       },
       backgroundImage: {
-        'bookmark-gradient': 'var(--bookmark-gradient)',
-        glassmorphism: 'var(--glassmorphism)',
+        'bookmark-gradient': 'linear-gradient(135deg, #3b82f6, #8b5cf6)',
+        glassmorphism: 'backdrop-blur(10px) saturate(150%)',
       },
       boxShadow: {
-        card: 'var(--card-shadow)',
-        'card-hover': 'var(--card-hover-shadow)',
+        card: '0 4px 20px -4px rgba(59, 130, 246, 0.15)',
+        'card-hover': '0 8px 30px -6px rgba(59, 130, 246, 0.25)',
       },
       keyframes: {
         'accordion-down': {

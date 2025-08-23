@@ -4,6 +4,17 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Extension의 심플한 다크모드 지원 */
+@layer base {
+  .dark {
+    @apply bg-gray-900 text-white;
+  }
+  
+  .dark * {
+    @apply border-gray-700;
+  }
+}
+
 html,
 body {
   display: flex;

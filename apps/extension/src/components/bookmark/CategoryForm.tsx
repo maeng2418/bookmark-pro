@@ -201,7 +201,7 @@ const CategoryForm = ({
                   <span className="text-sm font-medium"> {cat.name}</span>
                 </div>
                 <Button
-                  className="opacity-0 group-hover:opacity-100 ml-1 p-0.5 rounded-lg bg-red-100 text-red-500 transition-all"
+                  className="h-auto opacity-0 group-hover:opacity-100 ml-1 p-0.5 rounded-lg bg-red-100 text-red-500 transition-all"
                   title="카테고리 삭제"
                   onClick={handleDeleteCategory(cat)}
                 >

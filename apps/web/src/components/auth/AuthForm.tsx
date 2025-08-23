@@ -111,8 +111,8 @@ const AuthForm = () => {
     <div className="flex justify-center items-center p-4 min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
-          <div className="inline-flex justify-center items-center mb-4 w-16 h-16 rounded-2xl bg-gradient-primary">
-            <Bookmark className="w-8 h-8 text-white" />
+          <div className="inline-flex justify-center items-center mb-4 w-16 h-16 bg-blue-500 rounded-2xl">
+            <Bookmark fill="currentColor" className="text-2xl text-white" />
           </div>
           <h1 className="mb-2 text-3xl font-bold text-foreground">Bookmark Pro</h1>
           <p className="text-muted-foreground">북마크를 스마트하게 관리하세요</p>

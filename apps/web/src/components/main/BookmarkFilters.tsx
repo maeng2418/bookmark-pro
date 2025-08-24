@@ -1,19 +1,19 @@
 import { Badge, Button, ScrollArea } from '@bookmark-pro/ui'
 import { Folder, FolderOpen } from 'lucide-react'
 
-type CategoryFilterProps = {
+type BookmarkFiltersProps = {
   categories: string[]
   selectedCategory: string | null
   onCategorySelect: (category: string | null) => void
   bookmarkCounts: Record<string, number>
 }
 
-const CategoryFilter = ({
+const BookmarkFilters = ({
   categories,
   selectedCategory,
   onCategorySelect,
   bookmarkCounts,
-}: CategoryFilterProps) => {
+}: BookmarkFiltersProps) => {
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
@@ -63,4 +63,4 @@ const CategoryFilter = ({
   )
 }
 
-export default CategoryFilter
+export default BookmarkFilters

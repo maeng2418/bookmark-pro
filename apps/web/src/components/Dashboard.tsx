@@ -1,5 +1,6 @@
 'use client'
 
+import Layout from '@/components/common/Layout'
 import { supabase } from '@/supabase/client'
 import {
   Button,
@@ -11,25 +12,15 @@ import {
   useToast,
 } from '@bookmark-pro/ui'
 import type { Session, User } from '@supabase/supabase-js'
-import { BookmarkPlus, Grid3X3, List, User as UserIcon } from 'lucide-react'
+import { BookmarkPlus, Grid3X3, List } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { AddBookmarkDialog } from './AddBookmarkDialog'
-import { BookmarkCard } from './BookmarkCard'
-import { CategoryFilter } from './CategoryFilter'
-import { Header } from './Header'
-
-interface Bookmark {
-  id: string
-  title: string
-  url: string
-  description?: string | null
-  category: string
-  tags: string[] | null
-  created_at: string
-  favicon?: string | null
-  user_id: string
-}
+import type { Bookmark, ViewMode } from '../types/bookmark'
+import AddBookmarkDialog from './AddBookmarkDialog'
+import BookmarkCard from './bookmark/BookmarkCard'
+import CategoryFilter from './CategoryFilter'
+import { Header } from './common/Header'
+import LoadingSpinner from './common/LoadingSpinner'
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null)
@@ -39,7 +30,7 @@ const Dashboard = () => {
   const [searchQuery, setSearchQuery] = useState('')
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null)
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [loading, setLoading] = useState(true)
   const { toast } = useToast()
   const router = useRouter()
@@ -242,20 +233,11 @@ const Dashboard = () => {
 
   // Loading state
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 mb-4 bg-gradient-primary rounded-2xl animate-pulse">
-            <UserIcon className="w-8 h-8 text-white" />
-          </div>
-          <p className="text-muted-foreground">로딩 중...</p>
-        </div>
-      </div>
-    )
+    return <LoadingSpinner />
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
+    <Layout>
       <Header
         onAddBookmark={() => setIsAddDialogOpen(true)}
         onSearch={setSearchQuery}
@@ -275,7 +257,9 @@ const Dashboard = () => {
                 <CategoryFilter
                   categories={categories}
                   selectedCategory={selectedCategory}
-                  onCategorySelect={(category) => setSelectedCategory(category || '전체')}
+                  onCategorySelect={(category: string | null) =>
+                    setSelectedCategory(category || '전체')
+                  }
                   bookmarkCounts={bookmarkCounts}
                 />
               </CardContent>
@@ -314,7 +298,9 @@ const Dashboard = () => {
                       <CategoryFilter
                         categories={categories}
                         selectedCategory={selectedCategory}
-                        onCategorySelect={(category) => setSelectedCategory(category || '전체')}
+                        onCategorySelect={(category: string | null) =>
+                          setSelectedCategory(category || '전체')
+                        }
                         bookmarkCounts={bookmarkCounts}
                       />
                     </CardContent>
@@ -407,7 +393,7 @@ const Dashboard = () => {
 
       <AddBookmarkDialog
         open={isAddDialogOpen}
-        onOpenChange={(open) => {
+        onOpenChange={(open: boolean) => {
           setIsAddDialogOpen(open)
           if (!open) setEditingBookmark(null)
         }}
@@ -427,7 +413,7 @@ const Dashboard = () => {
             : undefined
         }
       />
-    </div>
+    </Layout>
   )
 }
 

@@ -1,5 +1,5 @@
+import type { Bookmark, BookmarkFormData } from '@/types/bookmark'
 import {
-  Badge,
   Button,
   Dialog,
   DialogContent,
@@ -8,49 +8,37 @@ import {
   DialogTitle,
   Input,
   Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
   useToast,
 } from '@bookmark-pro/ui'
-import { Plus, X } from 'lucide-react'
 import { useState } from 'react'
-import type { Bookmark } from '../types/bookmark'
+import CategorySelect from './CategorySelect'
+import TagInput from './TagInput'
 
-type EditingBookmark = {
-  id: string
-  title: string
-  url: string
-  category: string
-  tags: string[]
+type BookmarkFormBookmark = Omit<Bookmark, 'created_at' | 'user_id' | 'description'> & {
   createdAt: Date
-  favicon?: string
 }
 
-type AddBookmarkDialogProps = {
+type BookmarkFormProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave: (bookmark: Omit<Bookmark, 'id' | 'created_at' | 'user_id'>) => void
+  onSave: (bookmark: BookmarkFormData) => void
   categories: string[]
-  editingBookmark?: EditingBookmark
+  editingBookmark?: BookmarkFormBookmark
 }
 
-const AddBookmarkDialog = ({
+const BookmarkForm = ({
   open,
   onOpenChange,
   onSave,
   categories,
   editingBookmark,
-}: AddBookmarkDialogProps) => {
+}: BookmarkFormProps) => {
   const { toast } = useToast()
   const [title, setTitle] = useState(editingBookmark?.title || '')
   const [url, setUrl] = useState(editingBookmark?.url || '')
   const [category, setCategory] = useState(editingBookmark?.category || '')
   const [newCategory, setNewCategory] = useState('')
   const [tags, setTags] = useState<string[]>(editingBookmark?.tags || [])
-  const [newTag, setNewTag] = useState('')
 
   const handleSave = () => {
     if (!title.trim() || !url.trim()) {
@@ -96,7 +84,6 @@ const AddBookmarkDialog = ({
     setCategory('')
     setNewCategory('')
     setTags([])
-    setNewTag('')
     onOpenChange(false)
 
     toast({
@@ -105,23 +92,13 @@ const AddBookmarkDialog = ({
     })
   }
 
-  const addTag = () => {
-    const trimmedTag = newTag.trim()
-    if (trimmedTag && !tags.includes(trimmedTag)) {
-      setTags([...tags, trimmedTag])
-      setNewTag('')
-    }
-  }
-
-  const removeTag = (tagToRemove: string) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove))
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent, action: () => void) => {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      action()
-    }
+  const handleClose = () => {
+    setTitle('')
+    setUrl('')
+    setCategory('')
+    setNewCategory('')
+    setTags([])
+    onOpenChange(false)
   }
 
   return (
@@ -152,60 +129,22 @@ const AddBookmarkDialog = ({
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>카테고리 *</Label>
-            <Select value={category} onValueChange={setCategory}>
-              <SelectTrigger>
-                <SelectValue placeholder="카테고리 선택" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <div className="flex gap-2">
-              <Input
-                placeholder="새 카테고리 만들기"
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
-                onKeyPress={(e) => handleKeyPress(e, () => {})}
-              />
-            </div>
-          </div>
+          <CategorySelect
+            categories={categories}
+            selectedCategory={category}
+            onCategoryChange={setCategory}
+            newCategory={newCategory}
+            onNewCategoryChange={setNewCategory}
+          />
 
           <div className="space-y-2">
             <Label>태그</Label>
-            <div className="flex gap-2">
-              <Input
-                placeholder="태그 입력 후 엔터"
-                value={newTag}
-                onChange={(e) => setNewTag(e.target.value)}
-                onKeyPress={(e) => handleKeyPress(e, addTag)}
-              />
-              <Button onClick={addTag} size="sm" variant="outline">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            {tags.length > 0 && (
-              <div className="flex flex-wrap gap-1">
-                {tags.map((tag, index) => (
-                  <Badge key={index} variant="secondary" className="gap-1">
-                    #{tag}
-                    <button onClick={() => removeTag(tag)} className="hover:text-destructive">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </Badge>
-                ))}
-              </div>
-            )}
+            <TagInput tags={tags} onTagsChange={setTags} />
           </div>
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={handleClose}>
             취소
           </Button>
           <Button onClick={handleSave} className="bg-blue-500 hover:opacity-90">
@@ -217,4 +156,4 @@ const AddBookmarkDialog = ({
   )
 }
 
-export default AddBookmarkDialog
+export default BookmarkForm

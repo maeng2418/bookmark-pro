@@ -1,19 +1,14 @@
+import type { Bookmark } from '@/types/bookmark'
 import { Badge, Button, Card, CardContent, CardFooter, CardHeader } from '@bookmark-pro/ui'
 import { Edit3, ExternalLink, Globe, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 
-export interface Bookmark {
-  id: string
-  title: string
-  url: string
-  category: string
-  tags: string[]
+type BookmarkCardData = Omit<Bookmark, 'created_at' | 'user_id' | 'description'> & {
   createdAt: Date | string
-  favicon?: string
 }
 
-interface BookmarkCardProps {
-  bookmark?: Bookmark
+type BookmarkCardProps = {
+  bookmark?: BookmarkCardData
   id?: string
   title?: string
   url?: string
@@ -21,11 +16,11 @@ interface BookmarkCardProps {
   tags?: string[]
   createdAt?: string
   favicon?: string
-  onEdit: (bookmark?: Bookmark) => void
+  onEdit: (bookmark?: BookmarkCardData) => void
   onDelete: (id: string) => void
 }
 
-export const BookmarkCard = ({
+const BookmarkCard = ({
   bookmark,
   id,
   title,
@@ -60,46 +55,46 @@ export const BookmarkCard = ({
   }
 
   return (
-    <Card className="group hover:shadow-card-hover transition-all duration-300 animate-scale-in">
+    <Card className="transition-all duration-300 group hover:shadow-card-hover animate-scale-in">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex items-center gap-2 min-w-0 flex-1">
-            <div className="p-2 rounded-lg bg-muted flex-shrink-0">
+          <div className="flex items-center flex-1 min-w-0 gap-2">
+            <div className="flex-shrink-0 p-2 rounded-lg bg-muted">
               {bookmarkData.favicon ? (
                 <Image
                   src={bookmarkData.favicon}
                   alt="Favicon"
                   width={16}
                   height={16}
-                  className="h-4 w-4"
+                  className="w-4 h-4"
                 />
               ) : (
-                <Globe className="h-4 w-4 text-muted-foreground" />
+                <Globe className="w-4 h-4 text-muted-foreground" />
               )}
             </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-sm leading-tight truncate">{bookmarkData.title}</h3>
-              <p className="text-xs text-muted-foreground truncate">
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-semibold leading-tight truncate">{bookmarkData.title}</h3>
+              <p className="text-xs truncate text-muted-foreground">
                 {getDomainFromUrl(bookmarkData.url)}
               </p>
             </div>
           </div>
-          <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <div className="flex gap-1 transition-opacity opacity-0 group-hover:opacity-100">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onEdit(bookmarkData)}
-              className="h-8 w-8 p-0"
+              className="w-8 h-8 p-0"
             >
-              <Edit3 className="h-3 w-3" />
+              <Edit3 className="w-3 h-3" />
             </Button>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onDelete(bookmarkData.id)}
-              className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+              className="w-8 h-8 p-0 text-destructive hover:text-destructive"
             >
-              <Trash2 className="h-3 w-3" />
+              <Trash2 className="w-3 h-3" />
             </Button>
           </div>
         </div>
@@ -111,9 +106,9 @@ export const BookmarkCard = ({
             {bookmarkData.category}
           </Badge>
 
-          {bookmarkData.tags.length > 0 && (
+          {bookmarkData.tags && bookmarkData.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
-              {bookmarkData.tags.map((tag, index) => (
+              {bookmarkData?.tags.map((tag, index) => (
                 <Badge key={index} variant="outline" className="text-xs">
                   #{tag}
                 </Badge>
@@ -126,13 +121,15 @@ export const BookmarkCard = ({
       <CardFooter className="pt-2">
         <Button
           onClick={handleVisit}
-          className="w-full bg-blue-500 hover:opacity-90 text-white"
+          className="w-full text-white bg-blue-500 hover:opacity-90"
           size="sm"
         >
-          <ExternalLink className="h-3 w-3 mr-2" />
+          <ExternalLink className="w-3 h-3 mr-2" />
           방문하기
         </Button>
       </CardFooter>
     </Card>
   )
 }
+
+export default BookmarkCard

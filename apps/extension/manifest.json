@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "BookmarkPro",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "현재 페이지를 BookmarkPro에 쉽게 저장하고 관리하세요",
   "icons": {
     "16": "icons/16.png",

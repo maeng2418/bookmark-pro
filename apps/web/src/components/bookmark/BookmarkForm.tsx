@@ -1,4 +1,5 @@
 import type { Bookmark, BookmarkFormData } from '@/types/bookmark'
+import type { Category } from '@/supabase/categories'
 import {
   Button,
   Dialog,
@@ -22,7 +23,7 @@ type BookmarkFormProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave: (bookmark: BookmarkFormData) => void
-  categories: string[]
+  categories: Category[]
   editingBookmark?: BookmarkFormBookmark
 }
 
@@ -36,7 +37,7 @@ const BookmarkForm = ({
   const { toast } = useToast()
   const [title, setTitle] = useState(editingBookmark?.title || '')
   const [url, setUrl] = useState(editingBookmark?.url || '')
-  const [category, setCategory] = useState(editingBookmark?.category || '')
+  const [category, setCategory] = useState(editingBookmark?.category_id || '')
   const [newCategory, setNewCategory] = useState('')
   const [tags, setTags] = useState<string[]>(editingBookmark?.tags || [])
 
@@ -74,7 +75,7 @@ const BookmarkForm = ({
     onSave({
       title: title.trim(),
       url: url.trim(),
-      category: finalCategory,
+      category_id: finalCategory,
       tags: tags.filter((tag) => tag.trim()),
     })
 

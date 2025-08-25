@@ -18,12 +18,13 @@ import {
 import { Plus, X } from 'lucide-react'
 import { useState } from 'react'
 import type { Bookmark } from '../types/bookmark'
+import type { Category } from '../supabase/categories'
 
 type EditingBookmark = {
   id: string
   title: string
   url: string
-  category: string
+  category_id: string | null
   tags: string[]
   createdAt: Date
   favicon?: string
@@ -33,7 +34,7 @@ type AddBookmarkDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   onSave: (bookmark: Omit<Bookmark, 'id' | 'created_at' | 'user_id'>) => void
-  categories: string[]
+  categories: Category[]
   editingBookmark?: EditingBookmark
 }
 
@@ -47,7 +48,7 @@ const AddBookmarkDialog = ({
   const { toast } = useToast()
   const [title, setTitle] = useState(editingBookmark?.title || '')
   const [url, setUrl] = useState(editingBookmark?.url || '')
-  const [category, setCategory] = useState(editingBookmark?.category || '')
+  const [category, setCategory] = useState(editingBookmark?.category_id || '')
   const [newCategory, setNewCategory] = useState('')
   const [tags, setTags] = useState<string[]>(editingBookmark?.tags || [])
   const [newTag, setNewTag] = useState('')
@@ -86,7 +87,7 @@ const AddBookmarkDialog = ({
     onSave({
       title: title.trim(),
       url: url.trim(),
-      category: finalCategory,
+      category_id: finalCategory,
       tags: tags.filter((tag) => tag.trim()),
     })
 
@@ -160,8 +161,14 @@ const AddBookmarkDialog = ({
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
+                  <SelectItem key={cat.id} value={cat.id}>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="w-3 h-3 rounded-full"
+                        style={{ backgroundColor: cat.color }}
+                      />
+                      {cat.name}
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

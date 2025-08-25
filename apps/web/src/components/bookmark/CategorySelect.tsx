@@ -7,9 +7,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@bookmark-pro/ui'
+import type { Category } from '../../supabase/categories'
 
 type CategorySelectProps = {
-  categories: string[]
+  categories: Category[]
   selectedCategory: string
   onCategoryChange: (category: string) => void
   newCategory: string
@@ -32,8 +33,14 @@ const CategorySelect = ({
         </SelectTrigger>
         <SelectContent>
           {categories.map((cat) => (
-            <SelectItem key={cat} value={cat}>
-              {cat}
+            <SelectItem key={cat.id} value={cat.id}>
+              <div className="flex items-center gap-2">
+                <div
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: cat.color }}
+                />
+                {cat.name}
+              </div>
             </SelectItem>
           ))}
         </SelectContent>

@@ -16,6 +16,8 @@ import { BookmarkPlus, Grid3X3, List } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Bookmark, ViewMode } from '../types/bookmark'
+import type { Category } from '../supabase/categories'
+import { fetchCategories } from '../supabase/categories'
 import AddBookmarkDialog from './AddBookmarkDialog'
 import BookmarkCard from './bookmark/BookmarkCard'
 import CategoryFilter from './CategoryFilter'
@@ -26,7 +28,8 @@ const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<string>('전체')
+  const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
+  const [categories, setCategories] = useState<Category[]>([])
   const [searchQuery, setSearchQuery] = useState('')
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [editingBookmark, setEditingBookmark] = useState<Bookmark | null>(null)
@@ -40,7 +43,14 @@ const Dashboard = () => {
     try {
       const { data, error } = await supabase
         .from('bookmarks')
-        .select('*')
+        .select(`
+          *,
+          category:categories(
+            id,
+            name,
+            color
+          )
+        `)
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -55,6 +65,17 @@ const Dashboard = () => {
     }
   }, [toast])
 
+  // Fetch categories from Supabase
+  const fetchCategoriesData = useCallback(async () => {
+    if (!user?.id) return
+    try {
+      const categoryData = await fetchCategories(user.id)
+      setCategories(categoryData)
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    }
+  }, [user?.id])
+
   // Auth effect
   useEffect(() => {
     // Set up auth state listener
@@ -66,9 +87,10 @@ const Dashboard = () => {
       if (!_session) {
         router.push('/auth')
       } else {
-        // Fetch bookmarks when user logs in
+        // Fetch bookmarks and categories when user logs in
         setTimeout(() => {
           fetchBookmarks()
+          fetchCategoriesData()
         }, 0)
       }
     })
@@ -82,16 +104,18 @@ const Dashboard = () => {
         router.push('/auth')
       } else {
         fetchBookmarks()
+        fetchCategoriesData()
       }
     })
 
     return () => subscription.unsubscribe()
-  }, [router, fetchBookmarks])
+  }, [router, fetchBookmarks, fetchCategoriesData])
 
   // Memoized filtered bookmarks
   const filteredBookmarks = useMemo(() => {
     return bookmarks.filter((bookmark) => {
-      const matchesCategory = selectedCategory === '전체' || bookmark.category === selectedCategory
+      const matchesCategory = !selectedCategory || 
+        (bookmark.category && bookmark.category.id === selectedCategory.id)
       const matchesSearch =
         bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         bookmark.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -101,17 +125,13 @@ const Dashboard = () => {
     })
   }, [bookmarks, selectedCategory, searchQuery])
 
-  // Memoized categories
-  const categories = useMemo(() => {
-    const uniqueCategories = Array.from(new Set(bookmarks.map((b) => b.category)))
-    return ['전체', ...uniqueCategories]
-  }, [bookmarks])
-
   // Memoized bookmark counts
   const bookmarkCounts = useMemo(() => {
-    const counts: Record<string, number> = { 전체: bookmarks.length }
+    const counts: Record<string, number> = {}
     bookmarks.forEach((bookmark) => {
-      counts[bookmark.category] = (counts[bookmark.category] || 0) + 1
+      if (bookmark.category?.id) {
+        counts[bookmark.category.id] = (counts[bookmark.category.id] || 0) + 1
+      }
     })
     return counts
   }, [bookmarks])
@@ -130,7 +150,7 @@ const Dashboard = () => {
             title: bookmarkData.title,
             url: bookmarkData.url,
             description: bookmarkData.description,
-            category: bookmarkData.category,
+            category_id: bookmarkData.category_id,
             tags: bookmarkData.tags,
             favicon: bookmarkData.favicon,
           })
@@ -257,9 +277,7 @@ const Dashboard = () => {
                 <CategoryFilter
                   categories={categories}
                   selectedCategory={selectedCategory}
-                  onCategorySelect={(category: string | null) =>
-                    setSelectedCategory(category || '전체')
-                  }
+                  onCategorySelect={setSelectedCategory}
                   bookmarkCounts={bookmarkCounts}
                 />
               </CardContent>
@@ -298,9 +316,7 @@ const Dashboard = () => {
                       <CategoryFilter
                         categories={categories}
                         selectedCategory={selectedCategory}
-                        onCategorySelect={(category: string | null) =>
-                          setSelectedCategory(category || '전체')
-                        }
+                        onCategorySelect={setSelectedCategory}
                         bookmarkCounts={bookmarkCounts}
                       />
                     </CardContent>
@@ -313,7 +329,7 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <h2 className="text-lg font-semibold text-foreground">
-                  {selectedCategory === '전체' ? '전체 북마크' : `${selectedCategory} 카테고리`}
+                  {!selectedCategory ? '전체 북마크' : `${selectedCategory.name} 카테고리`}
                 </h2>
                 <span className="text-sm text-muted-foreground">
                   ({filteredBookmarks.length}개)
@@ -377,6 +393,7 @@ const Dashboard = () => {
                     id={bookmark.id}
                     title={bookmark.title}
                     url={bookmark.url}
+                    description={bookmark.description}
                     category={bookmark.category}
                     tags={bookmark.tags || []}
                     createdAt={bookmark.created_at}
@@ -398,14 +415,14 @@ const Dashboard = () => {
           if (!open) setEditingBookmark(null)
         }}
         onSave={handleSaveBookmark}
-        categories={categories.filter((c) => c !== '전체')}
+        categories={categories}
         editingBookmark={
           editingBookmark
             ? {
                 id: editingBookmark.id,
                 title: editingBookmark.title,
                 url: editingBookmark.url,
-                category: editingBookmark.category,
+                category_id: editingBookmark.category_id,
                 tags: editingBookmark.tags || [],
                 createdAt: new Date(editingBookmark.created_at),
                 favicon: editingBookmark.favicon || undefined,

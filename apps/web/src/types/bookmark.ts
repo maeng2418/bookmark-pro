@@ -3,7 +3,12 @@ export type Bookmark = {
   title: string
   url: string
   description?: string | null
-  category: string
+  category_id: string | null
+  category?: {
+    id: string
+    name: string
+    color: string
+  } | null
   tags: string[] | null
   created_at: string
   favicon?: string | null
@@ -13,7 +18,7 @@ export type Bookmark = {
 export type BookmarkFormData = {
   title: string
   url: string
-  category: string
+  category_id: string
   tags: string[]
   description?: string
   favicon?: string

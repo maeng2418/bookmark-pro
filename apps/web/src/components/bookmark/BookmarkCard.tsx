@@ -3,7 +3,7 @@ import { Badge, Button, Card, CardContent, CardFooter, CardHeader } from '@bookm
 import { Edit3, ExternalLink, Globe, Trash2 } from 'lucide-react'
 import Image from 'next/image'
 
-type BookmarkCardData = Omit<Bookmark, 'created_at' | 'user_id' | 'description'> & {
+type BookmarkCardData = Omit<Bookmark, 'created_at' | 'user_id'> & {
   createdAt: Date | string
 }
 
@@ -12,7 +12,12 @@ type BookmarkCardProps = {
   id?: string
   title?: string
   url?: string
-  category?: string
+  description?: string | null
+  category?: {
+    id: string
+    name: string
+    color: string
+  } | null
   tags?: string[]
   createdAt?: string
   favicon?: string
@@ -25,6 +30,7 @@ const BookmarkCard = ({
   id,
   title,
   url,
+  description,
   category,
   tags,
   createdAt,
@@ -37,7 +43,9 @@ const BookmarkCard = ({
     id: id!,
     title: title!,
     url: url!,
-    category: category!,
+    description: description || null,
+    category_id: null,
+    category: category || null,
     tags: tags || [],
     createdAt: createdAt ? new Date(createdAt) : new Date(),
     favicon,
@@ -102,9 +110,21 @@ const BookmarkCard = ({
 
       <CardContent className="py-2">
         <div className="space-y-2">
-          <Badge variant="secondary" className="text-xs">
-            {bookmarkData.category}
-          </Badge>
+          {bookmarkData.category && (
+            <Badge variant="secondary" className="text-xs flex items-center gap-1.5">
+              <div
+                className="w-2 h-2 rounded-full"
+                style={{ backgroundColor: bookmarkData.category.color }}
+              />
+              {bookmarkData.category.name}
+            </Badge>
+          )}
+
+          {bookmarkData.description && (
+            <div className="p-3 text-xs text-muted-foreground bg-muted rounded-lg">
+              {bookmarkData.description}
+            </div>
+          )}
 
           {bookmarkData.tags && bookmarkData.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">

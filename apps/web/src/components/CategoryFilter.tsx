@@ -1,10 +1,11 @@
 import { Badge, Button, ScrollArea } from '@bookmark-pro/ui'
 import { Folder, FolderOpen } from 'lucide-react'
+import type { Category } from '../supabase/categories'
 
 type CategoryFilterProps = {
-  categories: string[]
-  selectedCategory: string | null
-  onCategorySelect: (category: string | null) => void
+  categories: Category[]
+  selectedCategory: Category | null
+  onCategorySelect: (category: Category | null) => void
   bookmarkCounts: Record<string, number>
 }
 
@@ -41,19 +42,22 @@ const CategoryFilter = ({
 
           {categories.map((category) => (
             <Button
-              key={category}
-              variant={selectedCategory === category ? 'default' : 'ghost'}
+              key={category.id}
+              variant={selectedCategory?.id === category.id ? 'default' : 'ghost'}
               onClick={() => onCategorySelect(category)}
               className={`w-full justify-between text-left h-auto py-2 px-3 ${
-                selectedCategory === category ? 'bg-blue-500 text-white' : ''
+                selectedCategory?.id === category.id ? 'bg-blue-500 text-white' : ''
               }`}
             >
               <div className="flex items-center gap-2">
-                <Folder className="w-3 h-3" />
-                <span className="text-sm truncate">{category}</span>
+                <div
+                  className="w-2 h-2 rounded-full"
+                  style={{ backgroundColor: category.color }}
+                />
+                <span className="text-sm truncate">{category.name}</span>
               </div>
               <Badge variant="secondary" className="text-xs">
-                {bookmarkCounts[category] || 0}
+                {bookmarkCounts[category.id] || 0}
               </Badge>
             </Button>
           ))}

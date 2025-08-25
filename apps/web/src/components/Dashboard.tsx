@@ -11,14 +11,15 @@ import {
   CollapsibleTrigger,
   useToast,
 } from '@bookmark-pro/ui'
-import type { Session, User } from '@supabase/supabase-js'
+import type { User } from '@supabase/supabase-js'
 import { BookmarkPlus, Grid3X3, List } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import type { Bookmark, ViewMode } from '../types/bookmark'
 import type { Category } from '../supabase/categories'
 import { fetchCategories } from '../supabase/categories'
-import AddBookmarkDialog from './AddBookmarkDialog'
+import BookmarkForm from './bookmark/BookmarkForm'
+import type { BookmarkFormData } from '../schemas/bookmark.schema'
 import BookmarkCard from './bookmark/BookmarkCard'
 import CategoryFilter from './CategoryFilter'
 import { Header } from './common/Header'
@@ -26,7 +27,6 @@ import LoadingSpinner from './common/LoadingSpinner'
 
 const Dashboard = () => {
   const [user, setUser] = useState<User | null>(null)
-  const [session, setSession] = useState<Session | null>(null)
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([])
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null)
   const [categories, setCategories] = useState<Category[]>([])
@@ -83,7 +83,7 @@ const Dashboard = () => {
     // Set up auth state listener
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, _session) => {
+    } = supabase.auth.onAuthStateChange((_, _session) => {
       setUser(_session?.user ?? null)
 
       if (!_session) {
@@ -138,32 +138,28 @@ const Dashboard = () => {
     return counts
   }, [bookmarks])
 
-  const handleSaveBookmark = async (
-    bookmarkData: Omit<Bookmark, 'id' | 'created_at' | 'user_id'>,
-  ) => {
+  const handleSaveBookmark = async (bookmarkData: BookmarkFormData) => {
     if (!user) return
 
     try {
+      // Convert category object to category_id
+      const bookmarkPayload = {
+        title: bookmarkData.title,
+        url: bookmarkData.url,
+        description: bookmarkData.description || null,
+        category_id: bookmarkData.category?.id || null,
+        tags: bookmarkData.tags || [],
+        favicon: null, // TODO: Implement favicon extraction
+      }
+
       if (editingBookmark) {
         // Update existing bookmark
         const { error } = await supabase
           .from('bookmarks')
-          .update({
-            title: bookmarkData.title,
-            url: bookmarkData.url,
-            description: bookmarkData.description,
-            category_id: bookmarkData.category_id,
-            tags: bookmarkData.tags,
-            favicon: bookmarkData.favicon,
-          })
+          .update(bookmarkPayload)
           .eq('id', editingBookmark.id)
 
         if (error) throw error
-
-        toast({
-          title: '북마크 수정됨',
-          description: '북마크가 성공적으로 수정되었습니다.',
-        })
       } else {
         // Check for duplicate URL
         const { data: existingBookmarks } = await supabase
@@ -173,39 +169,26 @@ const Dashboard = () => {
           .eq('url', bookmarkData.url)
 
         if (existingBookmarks && existingBookmarks.length > 0) {
-          toast({
-            title: '중복된 URL',
-            description: '이미 저장된 URL입니다.',
-            variant: 'destructive',
-          })
-          return
+          throw new Error('이미 저장된 URL입니다.')
         }
 
         // Add new bookmark
         const { error } = await supabase.from('bookmarks').insert({
-          ...bookmarkData,
+          ...bookmarkPayload,
           user_id: user.id,
         })
 
         if (error) throw error
-
-        toast({
-          title: '북마크 추가됨',
-          description: '새 북마크가 성공적으로 추가되었습니다.',
-        })
       }
 
       // Refresh bookmarks
-      fetchBookmarks()
+      await fetchBookmarks()
+      await fetchCategoriesData()
       setIsAddDialogOpen(false)
       setEditingBookmark(null)
     } catch (error) {
       console.error('Error saving bookmark:', error)
-      toast({
-        title: '오류',
-        description: '북마크 저장에 실패했습니다.',
-        variant: 'destructive',
-      })
+      throw error // Re-throw to let BookmarkForm handle the error
     }
   }
 
@@ -410,27 +393,30 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <AddBookmarkDialog
+      <BookmarkForm
         open={isAddDialogOpen}
         onOpenChange={(open: boolean) => {
           setIsAddDialogOpen(open)
           if (!open) setEditingBookmark(null)
         }}
+        user={user}
         onSave={handleSaveBookmark}
-        categories={categories}
-        editingBookmark={
+        initialBookmark={
           editingBookmark
             ? {
                 id: editingBookmark.id,
                 title: editingBookmark.title,
                 url: editingBookmark.url,
-                category_id: editingBookmark.category_id,
-                tags: editingBookmark.tags || [],
-                createdAt: new Date(editingBookmark.created_at),
-                favicon: editingBookmark.favicon || undefined,
+                description: editingBookmark.description || null,
+                category: editingBookmark.category || null,
+                tags: editingBookmark.tags || null,
               }
             : undefined
         }
+        onCancel={() => {
+          setIsAddDialogOpen(false)
+          setEditingBookmark(null)
+        }}
       />
     </Layout>
   )

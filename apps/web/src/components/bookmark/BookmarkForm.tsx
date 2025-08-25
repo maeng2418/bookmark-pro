@@ -1,4 +1,4 @@
-import type { Bookmark, BookmarkFormData } from '@/types/bookmark'
+import { BookmarkFormData, bookmarkSchema } from '@/schemas/bookmark.schema'
 import type { Category } from '@/supabase/categories'
 import {
   Button,
@@ -9,147 +9,227 @@ import {
   DialogTitle,
   Input,
   Label,
+  Textarea,
   useToast,
 } from '@bookmark-pro/ui'
-import { useState } from 'react'
-import CategorySelect from './CategorySelect'
-import TagInput from './TagInput'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { User } from '@supabase/supabase-js'
+import { useEffect, useMemo, useState } from 'react'
+import { useController, useForm } from 'react-hook-form'
+import CategoryForm from './CategoryForm'
+import TagForm from './TagForm'
 
-type BookmarkFormBookmark = Omit<Bookmark, 'created_at' | 'user_id' | 'description'> & {
-  createdAt: Date
+type InitialBookmark = {
+  id: string
+  title: string
+  url: string
+  description: string | null
+  category: Category | null
+  tags: string[] | null
 }
 
 type BookmarkFormProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
-  onSave: (bookmark: BookmarkFormData) => void
-  categories: Category[]
-  editingBookmark?: BookmarkFormBookmark
+  user: User | null
+  currentUrl?: string
+  currentTitle?: string
+  initialBookmark?: InitialBookmark
+  onSave: (data: BookmarkFormData) => Promise<void>
+  onCancel?: () => void
 }
 
 const BookmarkForm = ({
   open,
   onOpenChange,
+  user,
+  currentUrl = '',
+  currentTitle = '',
+  initialBookmark,
   onSave,
-  categories,
-  editingBookmark,
+  onCancel,
 }: BookmarkFormProps) => {
+  const isEdit = !!initialBookmark
+  const [loading, setLoading] = useState(false)
+
   const { toast } = useToast()
-  const [title, setTitle] = useState(editingBookmark?.title || '')
-  const [url, setUrl] = useState(editingBookmark?.url || '')
-  const [category, setCategory] = useState(editingBookmark?.category_id || '')
-  const [newCategory, setNewCategory] = useState('')
-  const [tags, setTags] = useState<string[]>(editingBookmark?.tags || [])
 
-  const handleSave = () => {
-    if (!title.trim() || !url.trim()) {
-      toast({
-        title: '오류',
-        description: '제목과 URL은 필수 입력 항목입니다.',
-        variant: 'destructive',
-      })
-      return
+  const defaultValues = useMemo(
+    () => ({
+      url: initialBookmark?.url || currentUrl,
+      title: initialBookmark?.title || currentTitle,
+      description: initialBookmark?.description || '',
+      category: initialBookmark?.category || undefined,
+      tags: initialBookmark?.tags || [],
+    }),
+    [initialBookmark, currentUrl, currentTitle],
+  )
+
+  const {
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm<BookmarkFormData>({
+    defaultValues: defaultValues,
+    resolver: zodResolver(bookmarkSchema),
+  })
+
+  const { field: urlField } = useController({
+    name: 'url',
+    control,
+  })
+
+  const { field: titleField } = useController({
+    name: 'title',
+    control,
+  })
+
+  const { field: descriptionField } = useController({
+    name: 'description',
+    control,
+  })
+
+  const { field: categoryField } = useController({
+    name: 'category',
+    control,
+  })
+
+  const { field: tagsField } = useController({
+    name: 'tags',
+    control,
+  })
+
+  useEffect(() => {
+    reset(defaultValues)
+  }, [defaultValues, reset])
+
+  const handleAddTag = (tag: string) => {
+    const currentTags = tagsField.value || []
+    if (!currentTags.includes(tag)) {
+      tagsField.onChange([...currentTags, tag])
     }
+  }
 
-    const finalCategory = newCategory.trim() || category
-    if (!finalCategory) {
-      toast({
-        title: '오류',
-        description: '카테고리를 선택하거나 새로 만들어주세요.',
-        variant: 'destructive',
-      })
-      return
-    }
+  const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = tagsField.value || []
+    tagsField.onChange(currentTags.filter((tag) => tag !== tagToRemove))
+  }
 
+  const handleSubmitForm = handleSubmit(async (data: BookmarkFormData) => {
+    if (!user) return
+
+    setLoading(true)
     try {
-      new URL(url)
-    } catch {
+      await onSave(data)
+
+      toast({
+        title: isEdit ? '북마크 수정됨' : '북마크 추가됨',
+        description: isEdit
+          ? '북마크가 성공적으로 수정되었습니다.'
+          : '새 북마크가 성공적으로 추가되었습니다.',
+      })
+
+      handleClose()
+    } catch (error) {
+      console.error('Error saving bookmark:', error)
       toast({
         title: '오류',
-        description: '올바른 URL을 입력해주세요.',
+        description: isEdit ? '북마크 수정에 실패했습니다.' : '북마크 저장에 실패했습니다.',
         variant: 'destructive',
       })
-      return
+    } finally {
+      setLoading(false)
     }
+  })
 
-    onSave({
-      title: title.trim(),
-      url: url.trim(),
-      category_id: finalCategory,
-      tags: tags.filter((tag) => tag.trim()),
-    })
-
-    // Reset form
-    setTitle('')
-    setUrl('')
-    setCategory('')
-    setNewCategory('')
-    setTags([])
-    onOpenChange(false)
-
-    toast({
-      title: '성공',
-      description: editingBookmark ? '북마크가 수정되었습니다.' : '북마크가 저장되었습니다.',
-    })
+  const handleSelectCategory = (selectedCategory: Category) => {
+    categoryField.onChange(selectedCategory)
   }
 
   const handleClose = () => {
-    setTitle('')
-    setUrl('')
-    setCategory('')
-    setNewCategory('')
-    setTags([])
+    reset()
     onOpenChange(false)
+    onCancel?.()
   }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-md max-h-[80vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{editingBookmark ? '북마크 수정' : '새 북마크 추가'}</DialogTitle>
+          <DialogTitle className="text-base font-semibold">
+            {isEdit ? '북마크 수정' : '북마크 저장'}
+          </DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <form onSubmit={handleSubmitForm} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="title">제목 *</Label>
+            <Label htmlFor="url" className="text-sm font-medium">
+              URL *
+            </Label>
+            <Input id="url" {...urlField} placeholder="URL을 입력하세요" className="text-sm" />
+            {errors.url && <p className="text-xs text-red-600">{errors.url.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="title" className="text-sm font-medium">
+              제목 *
+            </Label>
             <Input
               id="title"
+              {...titleField}
               placeholder="북마크 제목을 입력하세요"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              className="text-sm"
+            />
+            {errors.title && <p className="text-xs text-red-600">{errors.title.message}</p>}
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">설명</Label>
+            <Textarea
+              {...descriptionField}
+              placeholder="북마크에 대한 설명을 남겨보세요"
+              rows={3}
+              maxLength={200}
+              className="text-sm resize-none"
+            />
+            <div className="text-xs text-right text-muted-foreground">
+              {(descriptionField.value || '').length}/200
+            </div>
+            {errors.description && (
+              <p className="text-xs text-red-600">{errors.description.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <CategoryForm
+              user={user}
+              selectedCategory={categoryField.value}
+              onSelectCategory={handleSelectCategory}
+              error={errors.category}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="url">URL *</Label>
-            <Input
-              id="url"
-              placeholder="https://example.com"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+            <TagForm
+              tags={tagsField.value || []}
+              onAddTag={handleAddTag}
+              onRemoveTag={handleRemoveTag}
+              error={errors.tags}
             />
           </div>
-
-          <CategorySelect
-            categories={categories}
-            selectedCategory={category}
-            onCategoryChange={setCategory}
-            newCategory={newCategory}
-            onNewCategoryChange={setNewCategory}
-          />
-
-          <div className="space-y-2">
-            <Label>태그</Label>
-            <TagInput tags={tags} onTagsChange={setTags} />
-          </div>
-        </div>
+        </form>
 
         <DialogFooter>
-          <Button variant="outline" onClick={handleClose}>
+          <Button type="button" variant="outline" onClick={handleClose}>
             취소
           </Button>
-          <Button onClick={handleSave} className="bg-blue-500 hover:opacity-90">
-            {editingBookmark ? '수정' : '저장'}
+          <Button
+            disabled={!isDirty || loading || !user}
+            onClick={handleSubmitForm}
+            className="text-white bg-blue-500 hover:bg-blue-600"
+          >
+            {loading ? '저장 중...' : '저장'}
           </Button>
         </DialogFooter>
       </DialogContent>

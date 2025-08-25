@@ -47,12 +47,12 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "bookmarks_category_id_fkey"
-            columns: ["category_id"]
+            foreignKeyName: 'bookmarks_category_id_fkey'
+            columns: ['category_id']
             isOneToOne: false
-            referencedRelation: "categories"
-            referencedColumns: ["id"]
-          }
+            referencedRelation: 'categories'
+            referencedColumns: ['id']
+          },
         ]
       }
       categories: {

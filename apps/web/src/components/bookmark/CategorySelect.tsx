@@ -35,10 +35,7 @@ const CategorySelect = ({
           {categories.map((cat) => (
             <SelectItem key={cat.id} value={cat.id}>
               <div className="flex items-center gap-2">
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: cat.color }}
-                />
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: cat.color }} />
                 {cat.name}
               </div>
             </SelectItem>

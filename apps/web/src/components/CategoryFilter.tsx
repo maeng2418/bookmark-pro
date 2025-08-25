@@ -50,10 +50,7 @@ const CategoryFilter = ({
               }`}
             >
               <div className="flex items-center gap-2">
-                <div
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: category.color }}
-                />
+                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: category.color }} />
                 <span className="text-sm truncate">{category.name}</span>
               </div>
               <Badge variant="secondary" className="text-xs">

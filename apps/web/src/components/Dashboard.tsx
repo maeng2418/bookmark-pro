@@ -43,14 +43,16 @@ const Dashboard = () => {
     try {
       const { data, error } = await supabase
         .from('bookmarks')
-        .select(`
+        .select(
+          `
           *,
           category:categories(
             id,
             name,
             color
           )
-        `)
+        `,
+        )
         .order('created_at', { ascending: false })
 
       if (error) throw error
@@ -114,8 +116,8 @@ const Dashboard = () => {
   // Memoized filtered bookmarks
   const filteredBookmarks = useMemo(() => {
     return bookmarks.filter((bookmark) => {
-      const matchesCategory = !selectedCategory || 
-        (bookmark.category && bookmark.category.id === selectedCategory.id)
+      const matchesCategory =
+        !selectedCategory || (bookmark.category && bookmark.category.id === selectedCategory.id)
       const matchesSearch =
         bookmark.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         bookmark.url.toLowerCase().includes(searchQuery.toLowerCase()) ||

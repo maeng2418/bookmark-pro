@@ -39,8 +39,8 @@ bookmark-pro/
 ### 모노레포 및 빌드 도구
 
 - **Turborepo**: 모노레포 관리 및 빌드 오케스트레이션
-- **pnpm**: 패키지 매니저 (Volta로 버전 관리)
-- **Volta**: Node.js 및 pnpm 버전 관리
+- **pnpm**: 패키지 매니저
+- **mise**: Node.js 버전 관리
 
 ### 프론트엔드
 
@@ -68,8 +68,8 @@ bookmark-pro/
 
 ### 필수 요구사항
 
-- Node.js 20.18.0 (Volta로 자동 관리)
-- pnpm 9.15.0 (Volta로 자동 관리)
+- Node.js 20.18.0 (mise로 자동 관리)
+- pnpm 9.15.0
 
 ### 설치 및 실행
 
@@ -80,15 +80,14 @@ bookmark-pro/
    cd bookmark-pro
    ```
 
-2. **Volta 설정** (선택사항)
+2. **mise 설정** (선택사항)
 
    ```bash
-   # Volta가 설치되어 있지 않다면
-   curl https://get.volta.sh | bash
+   # mise가 설치되어 있지 않다면
+   curl https://mise.run | sh
 
    # 프로젝트 디렉토리에서 자동으로 올바른 Node.js 버전 사용
-   volta install node@20.18.0
-   volta install pnpm@9.15.0
+   mise install
    ```
 
 3. **의존성 설치**

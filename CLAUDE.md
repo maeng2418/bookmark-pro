@@ -65,7 +65,7 @@ pnpm --filter @bookmark-pro/web lint      # Next.js ESLint config
 
 - **Turborepo**: Orchestrates builds with proper dependency management
 - **pnpm workspaces**: Package management with `workspace:*` dependencies
-- **Volta**: Node.js/pnpm version pinning (Node 20.18.0, pnpm 9.15.0)
+- **mise**: Node.js version management (Node 20.18.0)
 
 ### Package Dependencies
 
